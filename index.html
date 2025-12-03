@@ -93,7 +93,6 @@
         .spin-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #997c09; }
         .spin-btn:disabled { background: #95a5a6; color: #555; cursor: not-allowed; box-shadow: none; transform: translateY(5px); }
         
-        /* 已領取狀態的按鈕樣式 */
         .btn-claimed {
             background: linear-gradient(to bottom, #27ae60, #2ecc71) !important;
             box-shadow: 0 5px 0 #1e8449 !important;
@@ -132,7 +131,14 @@
         .modal-img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
 
         .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: bold; }
-        .modal-desc { font-size: 0.9rem; color: #555; margin-bottom: 20px; line-height: 1.4; white-space: pre-line; }
+        
+        /* 🔥 這裡修改了行高，讓兩行文字看起來舒服一點 */
+        .modal-desc { 
+            font-size: 0.95rem; 
+            color: #555; 
+            margin-bottom: 20px; 
+            line-height: 1.6; 
+        }
         
         .action-btn { background: #2ecc71; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; }
         
@@ -171,10 +177,11 @@
 
     <div style="margin-top: 40px; text-align: center; z-index: 999;">
         <button onclick="resetGame()" style="background: #e74c3c; color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            🔄 清除紀錄 (測試重來用)
+            🔄 清除紀錄 (重測用)
         </button>
         <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(這是測試按鈕，正式活動時請刪除)</p>
     </div>
+
     <div class="modal-overlay" id="resultModal">
         <div class="modal-content">
             <div class="modal-img-placeholder" id="modalImg">🎁</div>
@@ -201,10 +208,75 @@
         const MAX_ROUNDS = 3;
         let currentRound = 0;
         let prizeHistory = []; 
-        
         let userId = "";
         let userName = "";
         let selectedPrizeIndex = -1;
+
+        // --- 🔥 獎項設定 (含 HTML 排版) ---
+        // 我們在 desc 裡面使用了 <br> (換行) 和 <span style="..."> (改顏色小字)
+        const prizes = [
+            // 最大獎
+            { 
+                id: 'off_85', 
+                weight: 1, 
+                symbol: '👑', 
+                text: '整單 85 折券', 
+                desc: '超級大獎！全館消費不限金額 85 折！', 
+                link: 'https://lin.ee/你的85折券連結' 
+            },
+            
+            // 實體霸氣禮包 (都有加上小字灰字)
+            { 
+                id: 'gift_hotel_set', 
+                weight: 100, 
+                symbol: '🛁', 
+                text: '星級飯店洗沐組 (10組)', 
+                desc: '霸氣全包！一次帶走 10 組洗沐四件組<br><span style="color:#aaa; font-size:0.8rem;">(消費滿千可使用)</span>', 
+                link: 'https://lin.ee/你的飯店組連結' 
+            },
+            { 
+                id: 'gift_toiletries', 
+                weight: 100, 
+                symbol: '👝', 
+                text: '時尚盥洗包 (10個)', 
+                desc: '送禮自用兩相宜！一次獲得 10 個時尚盥洗包<br><span style="color:#aaa; font-size:0.8rem;">(消費滿千可使用)</span>', 
+                link: 'https://lin.ee/你的盥洗包連結' 
+            },
+            { 
+                id: 'gift_toothbrush', 
+                weight: 100, 
+                symbol: '🪥', 
+                text: '旅用牙刷牙膏組 (10組)', 
+                desc: '旅行必備！一次獲得 10 組精緻牙刷牙膏組<br><span style="color:#aaa; font-size:0.8rem;">(消費滿千可使用)</span>', 
+                link: 'https://lin.ee/你的牙刷組連結' 
+            },
+
+            // 滿額購物金區
+            { 
+                id: 'cash_500', 
+                weight: 20, 
+                symbol: '💰', 
+                text: '500元 滿額購物金', 
+                desc: '恭喜發財！獲得500元滿額折抵購物金！', 
+                link: 'https://lin.ee/你的500元連結' 
+            },
+            { 
+                id: 'cash_200', 
+                weight: 60, 
+                symbol: '🪙', 
+                text: '200元 滿額購物金', 
+                desc: '好運到！獲得200元滿額折抵購物金！', 
+                link: 'https://lin.ee/你的200元連結' 
+            },
+            { 
+                id: 'cash_100', 
+                weight: 100, 
+                symbol: '🪙', 
+                text: '100元 滿額購物金', 
+                desc: '暖心好禮！獲得100元滿額折抵購物金！', 
+                link: 'https://lin.ee/你的100元連結' 
+            }
+        ];
 
         // --- LINE LIFF 初始化 ---
         function initLineLiff() {
@@ -247,7 +319,6 @@
                     document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的聖誕拉霸 🎄`;
                     document.getElementById('status-msg').innerText = `Hello, ${userName}！祝你好運！`;
                     
-                    // 1. 檢查是否已領獎 (且有紀錄連結)
                     const wonPrizeName = localStorage.getItem('xmas_won_prize_' + userId);
                     const wonPrizeLink = localStorage.getItem('xmas_won_link_' + userId);
 
@@ -256,7 +327,6 @@
                         return;
                     }
 
-                    // 2. 檢查半途歷史紀錄
                     const savedHistory = localStorage.getItem('xmas_history_' + userId);
                     if (savedHistory) {
                         prizeHistory = JSON.parse(savedHistory);
@@ -271,7 +341,6 @@
                 });
         }
 
-        // 🔥 重點修改：改為顯示「查看優惠券」
         function lockGameAsFinished(prizeName, prizeLink) {
             const btn = document.getElementById('spinBtn');
             const statusMsg = document.getElementById('status-msg');
@@ -286,11 +355,9 @@
             }
 
             if (prizeLink) {
-                // 如果有連結，顯示查看按鈕
                 btn.innerText = "🎫 查看我的優惠券";
-                btn.className = "spin-btn btn-claimed"; // 換成綠色樣式
+                btn.className = "spin-btn btn-claimed";
                 btn.disabled = false;
-                // 點擊後開啟連結
                 btn.onclick = function() {
                     if (liff.isInClient()) {
                         liff.openWindow({ url: prizeLink, external: false });
@@ -299,7 +366,6 @@
                     }
                 };
             } else {
-                // 如果沒有連結(例如實體獎無網址)，顯示明日再來
                 btn.innerText = "明日再來";
                 btn.disabled = true;
             }
@@ -329,23 +395,12 @@
         }
 
         function resetGame() {
-            if(confirm("確定要清除紀錄並重來嗎？(這會清除你的中獎紀錄)")) {
+            if(confirm("確定要清除紀錄並重來嗎？")) {
                 localStorage.clear(); 
                 alert("紀錄已清除，網頁將重新整理！");
                 window.location.reload(); 
             }
         }
-
-        // --- 獎項設定 (請填入你的連結) ---
-        const prizes = [
-            { id: 'off_80', weight: 1, symbol: '👑', text: '整單 8 折券', desc: '太神啦！整單 8 折優惠！', link: 'https://lin.ee/你的8折連結' },
-            { id: 'off_90', weight: 5, symbol: '🎫', text: '整單 9 折券', desc: '恭喜獲得整單 9 折！', link: 'https://lin.ee/你的9折連結' },
-            { id: 'cash_1000', weight: 10, symbol: '💰', text: '1000元購物金', desc: '手氣超旺！1000元折價券！', link: 'https://lin.ee/你的1000元連結' },
-            { id: 'cash_500', weight: 20, symbol: '💰', text: '500元購物金', desc: '恭喜發財！500元折價券！', link: 'https://lin.ee/你的500元連結' },
-            { id: 'cash_200', weight: 100, symbol: '🪙', text: '200元購物金', desc: '好運到！200元折價券！', link: 'https://lin.ee/你的200元連結' },
-            { id: 'cash_100', weight: 300, symbol: '🪙', text: '100元購物金', desc: '暖心好禮！100元折價券！', link: 'https://lin.ee/你的100元連結' },
-            { id: 'gift_mix', weight: 50, symbol: '🎁', text: '實體好禮兌換', desc: '盥洗包/口罩/牙刷組 三選一', link: 'https://lin.ee/你的贈品連結' }
-        ];
 
         function getRandomPrize() {
             let totalWeight = 0;
@@ -391,10 +446,11 @@
             }, 1000);
         }
 
+        // 🔥 重點修改：將 innerText 改為 innerHTML，才能讀取 HTML 語法
         function showResultModal(prize) {
             const modal = document.getElementById('resultModal');
             document.getElementById('modalTitle').innerText = prize.text;
-            document.getElementById('modalDesc').innerText = prize.desc;
+            document.getElementById('modalDesc').innerHTML = prize.desc; // <--- 這裡改了
             
             const imgDiv = document.getElementById('modalImg');
             if (prize.image) imgDiv.innerHTML = `<img src="${prize.image}">`;
@@ -456,12 +512,11 @@
             if (selectedPrizeIndex === -1) return;
             const finalPrize = prizeHistory[selectedPrizeIndex];
             
-            // 🔥 重點修改：存下這張獎品的資訊 (名稱 + 連結)
             if (userId) {
                 localStorage.setItem('xmas_claimed_' + userId, 'true');
-                localStorage.setItem('xmas_won_prize_' + userId, finalPrize.text); // 存名稱
+                localStorage.setItem('xmas_won_prize_' + userId, finalPrize.text);
                 if(finalPrize.link) {
-                    localStorage.setItem('xmas_won_link_' + userId, finalPrize.link); // 存連結
+                    localStorage.setItem('xmas_won_link_' + userId, finalPrize.link);
                 }
             }
 
