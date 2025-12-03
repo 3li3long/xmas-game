@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聖誕拉霸活動</title>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        /* --- V5 RWD 樣式 (WIX 完美適配版) --- */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1a472a;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            padding: 10px;
+            overflow: hidden;
+        }
+        h1 {
+            color: #f0c419;
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 10px;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            text-align: center;
+        }
+        .info-text { font-size: 1rem; color: #ddd; margin-bottom: 15px; text-align: center;}
+        .count-badge { background: #2980b9; padding: 5px 15px; border-radius: 15px; font-weight: bold; color: #fff; }
+        .machine-container {
+            background-color: #c0392b;
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border: 5px solid #f0c419;
+            width: 95%;
+            max-width: 350px;
+            min-width: 280px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .slots-window {
+            background-color: #fff;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 5px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            width: 100%;
+        }
+        .reel {
+            font-size: clamp(2.5rem, 10vw, 3.5rem);
+            width: 33%;
+            height: 70px;
+            line-height: 75px;
+            text-align: center;
+            border-right: 2px solid #ddd;
+            color: #333;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .reel:last-child { border-right: none; }
+        .reel img { width: 80%; height: 80%; object-fit: contain; }
+        .spin-btn {
+            background: linear-gradient(to bottom, #f0c419, #d4ac0d);
+            border: none;
+            padding: 15px 0;
+            width: 100%;
+            font-size: 1.5rem;
+            color: #333;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #997c09;
+        }
+        .spin-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #997c09; }
+        .spin-btn:disabled { background: #95a5a6; color: #555; cursor: not-allowed; box-shadow: none; transform: translateY(5px); }
+        
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(5px);
+            padding: 20px;
+        }
+        .modal-content {
+            background: #fff; color: #333;
+            width: 100%; max-width: 320px;
+            padding: 30px 20px; border-radius: 20px;
+            text-align: center; position: relative;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            border: 4px solid #c0392b;
+            animation: popIn 0.3s ease-out;
+        }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .modal-img-placeholder {
+            width: 120px; height: 120px;
+            background-color: #fafafa;
+            margin: 0 auto 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 4rem;
+            border-radius: 10px; border: 2px dashed #ccc;
+        }
+        .modal-img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+        .modal-title { font-size: 1.5rem; color: #c0392b; margin-bottom: 10px; font-weight: bold; }
+        .modal-desc { font-size: 0.95rem; color: #555; margin-bottom: 20px; line-height: 1.5; white-space: pre-line; text-align: left; padding: 0 10px;}
+        .close-btn { background: #2ecc71; color: white; border: none; padding: 10px 30px; border-radius: 30px; font-size: 1.2rem; cursor: pointer; width: 100%; }
+        .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
+        @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
+    </style>
+</head>
+<body>
+    <div class="snow"></div>
+    <h1 id="welcome-msg">🎄 聖誕好禮拉霸 🎄</h1>
+    <div class="info-text" id="status-msg">連線中...</div>
+    
+    <div class="machine-container">
+        <div class="slots-window">
+            <div class="reel" id="reel1">🎅</div>
+            <div class="reel" id="reel2">🎅</div>
+            <div class="reel" id="reel3">🎅</div>
+        </div>
+        <button class="spin-btn" id="spinBtn" onclick="playGame()" disabled>載入中...</button>
+    </div>
+
+    <div class="modal-overlay" id="prizeModal">
+        <div class="modal-content">
+            <div class="modal-img-placeholder" id="modalImg">🎁</div>
+            <div class="modal-title" id="modalTitle">標題</div>
+            <div class="modal-desc" id="modalDesc">敘述</div>
+            <button class="close-btn" onclick="closeModal()">立即領取</button>
+        </div>
+    </div>
+
+    <script>
+        // ✅ 你的 ID 已經填好了
+        const YOUR_LIFF_ID = "2008607102-ZKoAeEga"; 
+
+        let testCount = 0;
+        let userId = "";
+        let userName = "";
+
+        // --- LINE LIFF 初始化 ---
+        function initLineLiff() {
+            document.getElementById('status-msg').innerText = "正在連接 LINE...";
+            
+            // 嘗試初始化
+            liff.init({ liffId: YOUR_LIFF_ID })
+                .then(() => {
+                    if (!liff.isLoggedIn()) {
+                        // 沒登入就導向登入頁
+                        liff.login();
+                    } else {
+                        // 已登入，開始抓資料
+                        getProfile();
+                    }
+                })
+                .catch((err) => {
+                    console.error('LIFF Error:', err);
+                    // 錯誤處理：如果不是在 LINE 開啟，或設定有誤
+                    document.getElementById('status-msg').innerHTML = "測試模式 (未連接 LINE)";
+                    document.getElementById('spinBtn').disabled = false;
+                    document.getElementById('spinBtn').innerText = "試試手氣";
+                });
+        }
+
+        function getProfile() {
+            liff.getProfile()
+                .then(profile => {
+                    userId = profile.userId;
+                    userName = profile.displayName;
+                    
+                    // 修改畫面上方文字，顯示用戶名字
+                    document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的聖誕拉霸 🎄`;
+                    document.getElementById('status-msg').innerText = `Hello, ${userName}！祝你好運！`;
+                    
+                    // 解鎖按鈕
+                    document.getElementById('spinBtn').disabled = false;
+                    document.getElementById('spinBtn').innerText = "試試手氣";
+                })
+                .catch(err => {
+                    console.error('Profile Error:', err);
+                    document.getElementById('status-msg').innerText = "無法取得資料，但仍可遊玩";
+                    document.getElementById('spinBtn').disabled = false;
+                });
+        }
+
+        // --- 遊戲邏輯 ---
+        const prizes = [
+            { id: 'off_80', type: 'coupon', symbol: '👑', weight: 1, image: '', text: '🎉 聖誕奇蹟降臨！', desc: '太不可思議了！獲得【整筆訂單 8 折】超級優惠，快清空你的購物車！' },
+            { id: 'off_90', type: 'coupon', symbol: '🎫', weight: 5, image: '', text: '✨ 幸運星是你！', desc: '恭喜獲得【整筆訂單 9 折】！聖誕節就是要對自己好一點！' },
+            { id: 'cash_1000', type: 'coupon', symbol: '💰', weight: 10, image: '', text: '🔥 天選之人是你！', desc: '手氣太旺了吧！豪送【1000元購物金】，老闆看到都要哭了！' },
+            { id: 'cash_500', type: 'coupon', symbol: '💰', weight: 20, image: '', text: '🎅 聖誕大紅包！', desc: '恭喜發財！獲得【500元購物金】，買份大禮物犒賞自己吧！' },
+            { id: 'cash_200', type: 'coupon', symbol: '🪙', weight: 100, image: '', text: '🍀 幸運加倍賞！', desc: '叮叮噹～好運來敲門！送上【200元購物金】，祝您購物愉快！' },
+            { id: 'cash_100', type: 'coupon', symbol: '🪙', weight: 300, image: '', text: '☕ 聖誕暖心禮！', desc: '暖暖心意送給您！獲得【100元購物金】，為這個冬天加溫！' },
+            { id: 'gift_mix', type: 'gift', symbol: '🎁', weight: 50, image: '', text: '🎁 聖誕好禮三選一', desc: '恭喜獲得實體好禮兌換資格！\n請至櫃台出示畫面，即可從以下好禮 **任選一樣** 帶回家：\n\n✨ 時尚盥洗包\n✨ 防疫守護口罩\n✨ 輕旅牙刷組' }
+        ];
+
+        function getRandomPrize() {
+            let totalWeight = 0;
+            prizes.forEach(p => totalWeight += p.weight);
+            let randomNum = Math.random() * totalWeight;
+            for (let i = 0; i < prizes.length; i++) {
+                randomNum -= prizes[i].weight;
+                if (randomNum <= 0) return prizes[i];
+            }
+            return prizes[prizes.length - 1];
+        }
+
+        const reel1 = document.getElementById('reel1');
+        const reel2 = document.getElementById('reel2');
+        const reel3 = document.getElementById('reel3');
+        const spinBtn = document.getElementById('spinBtn');
+        const statusMsg = document.getElementById('status-msg');
+
+        function playGame() {
+            testCount++;
+            // 更新狀態列顯示次數
+            if(statusMsg && userName) {
+                 statusMsg.innerText = `${userName} 已遊玩第 ${testCount} 次`;
+            } else if (statusMsg) {
+                 statusMsg.innerText = `目前已測試：${testCount} 次`;
+            }
+
+            spinBtn.disabled = true;
+            spinBtn.innerText = "好運運轉中...";
+            
+            let interval = setInterval(() => {
+                reel1.innerText = ["🎅","🎄","🎁","💰"][Math.floor(Math.random()*4)];
+                reel2.innerText = ["🎅","🎄","🎁","💰"][Math.floor(Math.random()*4)];
+                reel3.innerText = ["🎅","🎄","🎁","💰"][Math.floor(Math.random()*4)];
+            }, 100);
+
+            let result = getRandomPrize();
+
+            setTimeout(() => {
+                clearInterval(interval);
+                reel1.innerText = result.symbol;
+                reel2.innerText = result.symbol;
+                reel3.innerText = result.symbol;
+
+                setTimeout(() => { showModal(result); }, 500);
+
+                spinBtn.innerText = "再試一次";
+                spinBtn.disabled = false;
+            }, 1000);
+        }
+
+        function showModal(prize) {
+            const modal = document.getElementById('prizeModal');
+            document.getElementById('modalTitle').innerText = prize.text;
+            document.getElementById('modalDesc').innerText = prize.desc;
+            const imgDiv = document.getElementById('modalImg');
+            if (prize.image) {
+                imgDiv.innerHTML = `<img src="${prize.image}" alt="prize">`;
+            } else {
+                imgDiv.innerText = prize.symbol;
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('prizeModal').style.display = 'none';
+        }
+
+        // 啟動 LINE 連線
+        window.onload = function() {
+            initLineLiff();
+        };
+    </script>
+</body>
+</html>
