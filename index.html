@@ -6,7 +6,7 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- V5 RWD 樣式 (維持不變) --- */
+        /* --- 樣式區 (維持不變) --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -16,11 +16,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             width: 100vw;
             margin: 0;
             padding: 10px;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
         h1 {
             color: #f0c419;
@@ -92,6 +93,13 @@
         .spin-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #997c09; }
         .spin-btn:disabled { background: #95a5a6; color: #555; cursor: not-allowed; box-shadow: none; transform: translateY(5px); }
         
+        /* 已領取狀態的按鈕樣式 */
+        .btn-claimed {
+            background: linear-gradient(to bottom, #27ae60, #2ecc71) !important;
+            box-shadow: 0 5px 0 #1e8449 !important;
+            color: #fff !important;
+        }
+
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8);
@@ -161,6 +169,12 @@
         <button class="spin-btn" id="spinBtn" onclick="playGame()" disabled>載入中...</button>
     </div>
 
+    <div style="margin-top: 40px; text-align: center; z-index: 999;">
+        <button onclick="resetGame()" style="background: #e74c3c; color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+            🔄 清除紀錄 (測試重來用)
+        </button>
+        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(這是測試按鈕，正式活動時請刪除)</p>
+    </div>
     <div class="modal-overlay" id="resultModal">
         <div class="modal-content">
             <div class="modal-img-placeholder" id="modalImg">🎁</div>
@@ -179,22 +193,8 @@
         </div>
     </div>
 
-    <div style="margin-top: 30px; text-align: center;">
-        <button onclick="resetGame()" style="background: #333; color: #fff; border: 1px solid #555; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-            🛠️ 清除紀錄 (重測用)
-        </button>
-    </div>
-    
     <script>
-        // 把這個函式加在 <script> 裡面的任意位置 (例如放在最後面)
-        function resetGame() {
-            if(confirm("確定要清除所有紀錄並重來嗎？")) {
-                localStorage.clear(); // 清空所有暫存
-                alert("紀錄已清除！頁面將重新整理。");
-                window.location.reload(); // 重新整理網頁
-            }
-        }
-        // ✅ 你的 ID (確認無誤)
+        // ✅ LIFF ID
         const YOUR_LIFF_ID = "2008607102-ZKoAeEga"; 
 
         // 遊戲變數
@@ -220,7 +220,6 @@
                 .catch((err) => {
                     console.error('LIFF Error:', err);
                     document.getElementById('status-msg').innerHTML = "測試模式 (未連接 LINE)";
-                    // 測試模式下無法存檔(因為沒ID)，僅供體驗
                     enableGame(); 
                 });
         }
@@ -234,7 +233,7 @@
                     // =========== 🚧 封閉測試鎖定區 (需要時解除註解) 🚧 ===========
                     /*
                     const whiteList = [
-                        "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // 填入你的 ID
+                        "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", 
                         "Uyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
                     ];
                     if (!whiteList.includes(userId)) {
@@ -248,13 +247,16 @@
                     document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的聖誕拉霸 🎄`;
                     document.getElementById('status-msg').innerText = `Hello, ${userName}！祝你好運！`;
                     
-                    // 1. 先檢查是否已領獎 (遊戲結束)
+                    // 1. 檢查是否已領獎 (且有紀錄連結)
+                    const wonPrizeName = localStorage.getItem('xmas_won_prize_' + userId);
+                    const wonPrizeLink = localStorage.getItem('xmas_won_link_' + userId);
+
                     if (localStorage.getItem('xmas_claimed_' + userId)) {
-                        lockGameAsFinished();
+                        lockGameAsFinished(wonPrizeName, wonPrizeLink);
                         return;
                     }
 
-                    // 2. 檢查是否有「玩到一半」的進度 (重點修正！)
+                    // 2. 檢查半途歷史紀錄
                     const savedHistory = localStorage.getItem('xmas_history_' + userId);
                     if (savedHistory) {
                         prizeHistory = JSON.parse(savedHistory);
@@ -269,28 +271,50 @@
                 });
         }
 
-        function lockGameAsFinished() {
-            alert("您已經領取過聖誕禮物囉！");
-            document.getElementById('status-msg').innerText = "已完成領取";
-            document.getElementById('round-text').innerText = "活動已結束";
-            document.getElementById('spinBtn').innerText = "明日再來";
-            document.getElementById('spinBtn').disabled = true;
+        // 🔥 重點修改：改為顯示「查看優惠券」
+        function lockGameAsFinished(prizeName, prizeLink) {
+            const btn = document.getElementById('spinBtn');
+            const statusMsg = document.getElementById('status-msg');
+            const roundText = document.getElementById('round-text');
+
+            roundText.innerText = "活動已完成";
+
+            if (prizeName) {
+                statusMsg.innerText = `您已獲得：${prizeName}`;
+            } else {
+                statusMsg.innerText = "已完成領取";
+            }
+
+            if (prizeLink) {
+                // 如果有連結，顯示查看按鈕
+                btn.innerText = "🎫 查看我的優惠券";
+                btn.className = "spin-btn btn-claimed"; // 換成綠色樣式
+                btn.disabled = false;
+                // 點擊後開啟連結
+                btn.onclick = function() {
+                    if (liff.isInClient()) {
+                        liff.openWindow({ url: prizeLink, external: false });
+                    } else {
+                        window.location.href = prizeLink;
+                    }
+                };
+            } else {
+                // 如果沒有連結(例如實體獎無網址)，顯示明日再來
+                btn.innerText = "明日再來";
+                btn.disabled = true;
+            }
         }
 
         function enableGame() {
             const btn = document.getElementById('spinBtn');
             btn.disabled = false;
 
-            // 根據進度恢復介面
             if (currentRound >= MAX_ROUNDS) {
-                // 如果已經轉完3次，但還沒領獎 (例如轉完當下當機/關掉)
-                // 直接引導去選獎品
                 btn.innerText = "查看獎品 (3選1)";
-                btn.onclick = showSelectionModal; // 綁定直接開啟選擇視窗
+                btn.onclick = showSelectionModal; 
             } else {
-                // 還沒轉完，繼續轉
                 btn.innerText = `開始第 ${currentRound + 1} 次`;
-                btn.onclick = playGame; // 綁定轉動
+                btn.onclick = playGame; 
             }
             updateRoundText();
         }
@@ -304,7 +328,15 @@
             }
         }
 
-        // --- 獎項設定 ---
+        function resetGame() {
+            if(confirm("確定要清除紀錄並重來嗎？(這會清除你的中獎紀錄)")) {
+                localStorage.clear(); 
+                alert("紀錄已清除，網頁將重新整理！");
+                window.location.reload(); 
+            }
+        }
+
+        // --- 獎項設定 (請填入你的連結) ---
         const prizes = [
             { id: 'off_80', weight: 1, symbol: '👑', text: '整單 8 折券', desc: '太神啦！整單 8 折優惠！', link: 'https://lin.ee/你的8折連結' },
             { id: 'off_90', weight: 5, symbol: '🎫', text: '整單 9 折券', desc: '恭喜獲得整單 9 折！', link: 'https://lin.ee/你的9折連結' },
@@ -346,7 +378,6 @@
             let result = getRandomPrize();
             prizeHistory.push(result);
 
-            // 🔥 重點：存檔！防止重新整理後進度消失
             if (userId) {
                 localStorage.setItem('xmas_history_' + userId, JSON.stringify(prizeHistory));
             }
@@ -425,8 +456,13 @@
             if (selectedPrizeIndex === -1) return;
             const finalPrize = prizeHistory[selectedPrizeIndex];
             
+            // 🔥 重點修改：存下這張獎品的資訊 (名稱 + 連結)
             if (userId) {
                 localStorage.setItem('xmas_claimed_' + userId, 'true');
+                localStorage.setItem('xmas_won_prize_' + userId, finalPrize.text); // 存名稱
+                if(finalPrize.link) {
+                    localStorage.setItem('xmas_won_link_' + userId, finalPrize.link); // 存連結
+                }
             }
 
             if (finalPrize.link) {
