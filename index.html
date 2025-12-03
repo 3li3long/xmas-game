@@ -6,7 +6,7 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- 樣式區 (維持不變) --- */
+        /* --- 樣式區 (維持 V13 不變) --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -132,12 +132,13 @@
 
         .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: bold; }
         
-        /* 🔥 這裡修改了行高，讓兩行文字看起來舒服一點 */
         .modal-desc { 
             font-size: 0.95rem; 
             color: #555; 
             margin-bottom: 20px; 
             line-height: 1.6; 
+            text-align: left; /* 條列式文字靠左比較好看 */
+            padding: 0 10px;
         }
         
         .action-btn { background: #2ecc71; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; }
@@ -212,8 +213,8 @@
         let userName = "";
         let selectedPrizeIndex = -1;
 
-        // --- 🔥 獎項設定 (含 HTML 排版) ---
-        // 我們在 desc 裡面使用了 <br> (換行) 和 <span style="..."> (改顏色小字)
+        // --- 🔥 獎項設定 (V14 整合版) ---
+        // weight: 100 代表跟100元購物金一樣容易中
         const prizes = [
             // 最大獎
             { 
@@ -225,30 +226,14 @@
                 link: 'https://lin.ee/你的85折券連結' 
             },
             
-            // 實體霸氣禮包 (都有加上小字灰字)
+            // 實體霸氣禮包 (四合一，單一連結)
             { 
-                id: 'gift_hotel_set', 
-                weight: 100, 
-                symbol: '🛁', 
-                text: '星級飯店洗沐組 (10組)', 
-                desc: '霸氣全包！一次帶走 10 組洗沐四件組<br><span style="color:#aaa; font-size:0.8rem;">(消費滿千可使用)</span>', 
-                link: 'https://lin.ee/你的飯店組連結' 
-            },
-            { 
-                id: 'gift_toiletries', 
-                weight: 100, 
-                symbol: '👝', 
-                text: '時尚盥洗包 (10個)', 
-                desc: '送禮自用兩相宜！一次獲得 10 個時尚盥洗包<br><span style="color:#aaa; font-size:0.8rem;">(消費滿千可使用)</span>', 
-                link: 'https://lin.ee/你的盥洗包連結' 
-            },
-            { 
-                id: 'gift_toothbrush', 
-                weight: 100, 
-                symbol: '🪥', 
-                text: '旅用牙刷牙膏組 (10組)', 
-                desc: '旅行必備！一次獲得 10 組精緻牙刷牙膏組<br><span style="color:#aaa; font-size:0.8rem;">(消費滿千可使用)</span>', 
-                link: 'https://lin.ee/你的牙刷組連結' 
+                id: 'gift_mix_all', 
+                weight: 100, // 權重設為 100 (與參加獎相同)
+                symbol: '🎁', 
+                text: '精選實體好禮', 
+                desc: '恭喜獲得實體好禮！消費滿千可選實體好禮四選一：<br><br>▪ 旅用盥洗包*10<br>▪ 旅用牙膏牙刷組*10<br>▪ JMO星級飯店洗沐四件組<br>▪ REN星級飯店洗沐四件組<br><br><span style="color:#aaa; font-size:0.8rem;">(請出示畫面兌換，數量有限送完為止)</span>', 
+                link: 'https://lin.ee/你的實體好禮兌換連結' // 👉 這裡只要填一張券的網址
             },
 
             // 滿額購物金區
@@ -446,11 +431,10 @@
             }, 1000);
         }
 
-        // 🔥 重點修改：將 innerText 改為 innerHTML，才能讀取 HTML 語法
         function showResultModal(prize) {
             const modal = document.getElementById('resultModal');
             document.getElementById('modalTitle').innerText = prize.text;
-            document.getElementById('modalDesc').innerHTML = prize.desc; // <--- 這裡改了
+            document.getElementById('modalDesc').innerHTML = prize.desc; 
             
             const imgDiv = document.getElementById('modalImg');
             if (prize.image) imgDiv.innerHTML = `<img src="${prize.image}">`;
