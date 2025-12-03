@@ -6,7 +6,7 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- V5 RWD 樣式 (WIX 完美適配版) --- */
+        /* --- V5 RWD 樣式 (維持不變) --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -31,7 +31,6 @@
         }
         .info-text { font-size: 1rem; color: #ddd; margin-bottom: 15px; text-align: center;}
         
-        /* 增加一個顯示目前回合的標示 */
         .round-indicator {
             background: rgba(0,0,0,0.3);
             padding: 5px 15px;
@@ -95,7 +94,7 @@
         
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); /* 背景深一點 */
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             justify-content: center; align-items: center;
             z-index: 1000; backdrop-filter: blur(5px);
@@ -110,11 +109,10 @@
             border: 4px solid #c0392b;
             animation: popIn 0.3s ease-out;
             max-height: 90vh;
-            overflow-y: auto; /* 內容太多時可捲動 */
+            overflow-y: auto;
         }
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
-        /* 一般中獎圖示 */
         .modal-img-placeholder {
             width: 100px; height: 100px;
             background-color: #fafafa;
@@ -129,24 +127,12 @@
         .modal-desc { font-size: 0.9rem; color: #555; margin-bottom: 20px; line-height: 1.4; white-space: pre-line; }
         
         .action-btn { background: #2ecc71; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; }
-        .secondary-btn { background: #95a5a6; color: white; border: none; padding: 10px 20px; border-radius: 30px; font-size: 1rem; cursor: pointer; }
-
-        /* --- 最終選擇列表樣式 --- */
-        .prize-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        
+        .prize-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .prize-item {
-            border: 2px solid #eee;
-            border-radius: 10px;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            text-align: left;
-            transition: all 0.2s;
-            cursor: pointer;
+            border: 2px solid #eee; border-radius: 10px; padding: 10px;
+            display: flex; align-items: center; text-align: left;
+            transition: all 0.2s; cursor: pointer;
         }
         .prize-item:hover { border-color: #f0c419; background: #fffdf0; }
         .prize-item.selected { border-color: #c0392b; background: #fff0f0; border-width: 3px; }
@@ -164,7 +150,6 @@
     <div class="snow"></div>
     <h1 id="welcome-msg">🎄 聖誕好禮拉霸 🎄</h1>
     <div class="info-text" id="status-msg">連線中...</div>
-    
     <div class="round-indicator" id="round-text">準備開始 (0/3)</div>
 
     <div class="machine-container">
@@ -189,26 +174,37 @@
         <div class="modal-content">
             <div class="modal-title">🎉 恭喜完成！</div>
             <div class="modal-desc">您有 3 次中獎紀錄，請 **擇一** 領取：<br>(點選後將無法更改)</div>
-            
-            <div class="prize-list" id="finalList">
-                </div>
-
+            <div class="prize-list" id="finalList"></div>
             <button class="action-btn" onclick="confirmSelection()" disabled id="confirmBtn">請先選擇一個獎品</button>
         </div>
     </div>
 
+    <div style="margin-top: 30px; text-align: center;">
+        <button onclick="resetGame()" style="background: #333; color: #fff; border: 1px solid #555; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            🛠️ 清除紀錄 (重測用)
+        </button>
+    </div>
+    
     <script>
-        // ✅ 你的新 ID (請確認這是你更新後的 ID)
+        // 把這個函式加在 <script> 裡面的任意位置 (例如放在最後面)
+        function resetGame() {
+            if(confirm("確定要清除所有紀錄並重來嗎？")) {
+                localStorage.clear(); // 清空所有暫存
+                alert("紀錄已清除！頁面將重新整理。");
+                window.location.reload(); // 重新整理網頁
+            }
+        }
+        // ✅ 你的 ID (確認無誤)
         const YOUR_LIFF_ID = "2008607102-ZKoAeEga"; 
 
         // 遊戲變數
-        let currentRound = 0;
         const MAX_ROUNDS = 3;
-        let prizeHistory = []; // 暫存背包
+        let currentRound = 0;
+        let prizeHistory = []; 
         
         let userId = "";
         let userName = "";
-        let selectedPrizeIndex = -1; // 用戶最後選了哪一個
+        let selectedPrizeIndex = -1;
 
         // --- LINE LIFF 初始化 ---
         function initLineLiff() {
@@ -224,7 +220,8 @@
                 .catch((err) => {
                     console.error('LIFF Error:', err);
                     document.getElementById('status-msg').innerHTML = "測試模式 (未連接 LINE)";
-                    enableGame();
+                    // 測試模式下無法存檔(因為沒ID)，僅供體驗
+                    enableGame(); 
                 });
         }
 
@@ -233,16 +230,35 @@
                 .then(profile => {
                     userId = profile.userId;
                     userName = profile.displayName;
+
+                    // =========== 🚧 封閉測試鎖定區 (需要時解除註解) 🚧 ===========
+                    /*
+                    const whiteList = [
+                        "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", // 填入你的 ID
+                        "Uyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+                    ];
+                    if (!whiteList.includes(userId)) {
+                        alert("🚧 抱歉，本活動目前進行內部測試中 🚧");
+                        liff.closeWindow();
+                        return;
+                    }
+                    */
+                    // ========================================================
+
                     document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的聖誕拉霸 🎄`;
                     document.getElementById('status-msg').innerText = `Hello, ${userName}！祝你好運！`;
                     
-                    // 檢查是否已經領過了 (簡單的 localStorage 防護)
+                    // 1. 先檢查是否已領獎 (遊戲結束)
                     if (localStorage.getItem('xmas_claimed_' + userId)) {
-                        alert("您已經領取過聖誕禮物囉！");
-                        document.getElementById('status-msg').innerText = "已完成領取";
-                        document.getElementById('spinBtn').innerText = "明日再來";
-                        document.getElementById('spinBtn').disabled = true;
+                        lockGameAsFinished();
                         return;
+                    }
+
+                    // 2. 檢查是否有「玩到一半」的進度 (重點修正！)
+                    const savedHistory = localStorage.getItem('xmas_history_' + userId);
+                    if (savedHistory) {
+                        prizeHistory = JSON.parse(savedHistory);
+                        currentRound = prizeHistory.length;
                     }
 
                     enableGame();
@@ -253,9 +269,29 @@
                 });
         }
 
+        function lockGameAsFinished() {
+            alert("您已經領取過聖誕禮物囉！");
+            document.getElementById('status-msg').innerText = "已完成領取";
+            document.getElementById('round-text').innerText = "活動已結束";
+            document.getElementById('spinBtn').innerText = "明日再來";
+            document.getElementById('spinBtn').disabled = true;
+        }
+
         function enableGame() {
-            document.getElementById('spinBtn').disabled = false;
-            document.getElementById('spinBtn').innerText = "開始第 1 次";
+            const btn = document.getElementById('spinBtn');
+            btn.disabled = false;
+
+            // 根據進度恢復介面
+            if (currentRound >= MAX_ROUNDS) {
+                // 如果已經轉完3次，但還沒領獎 (例如轉完當下當機/關掉)
+                // 直接引導去選獎品
+                btn.innerText = "查看獎品 (3選1)";
+                btn.onclick = showSelectionModal; // 綁定直接開啟選擇視窗
+            } else {
+                // 還沒轉完，繼續轉
+                btn.innerText = `開始第 ${currentRound + 1} 次`;
+                btn.onclick = playGame; // 綁定轉動
+            }
             updateRoundText();
         }
 
@@ -268,7 +304,7 @@
             }
         }
 
-        // --- 獎項設定 (請填入你的連結) ---
+        // --- 獎項設定 ---
         const prizes = [
             { id: 'off_80', weight: 1, symbol: '👑', text: '整單 8 折券', desc: '太神啦！整單 8 折優惠！', link: 'https://lin.ee/你的8折連結' },
             { id: 'off_90', weight: 5, symbol: '🎫', text: '整單 9 折券', desc: '恭喜獲得整單 9 折！', link: 'https://lin.ee/你的9折連結' },
@@ -290,7 +326,6 @@
             return prizes[prizes.length - 1];
         }
 
-        // --- 遊戲核心 ---
         const reel1 = document.getElementById('reel1');
         const reel2 = document.getElementById('reel2');
         const reel3 = document.getElementById('reel3');
@@ -308,66 +343,58 @@
                 reel3.innerText = ["🎅","🎄","🎁","💰"][Math.floor(Math.random()*4)];
             }, 100);
 
-            // 決定結果
             let result = getRandomPrize();
-            // 存入背包
             prizeHistory.push(result);
+
+            // 🔥 重點：存檔！防止重新整理後進度消失
+            if (userId) {
+                localStorage.setItem('xmas_history_' + userId, JSON.stringify(prizeHistory));
+            }
 
             setTimeout(() => {
                 clearInterval(interval);
                 reel1.innerText = result.symbol;
                 reel2.innerText = result.symbol;
                 reel3.innerText = result.symbol;
-
                 setTimeout(() => { showResultModal(result); }, 500);
             }, 1000);
         }
 
-        // 顯示單次結果
         function showResultModal(prize) {
             const modal = document.getElementById('resultModal');
             document.getElementById('modalTitle').innerText = prize.text;
             document.getElementById('modalDesc').innerText = prize.desc;
             
-            // 圖片或 Emoji
             const imgDiv = document.getElementById('modalImg');
             if (prize.image) imgDiv.innerHTML = `<img src="${prize.image}">`;
             else imgDiv.innerText = prize.symbol;
 
             const btn = document.getElementById('modalBtn');
-            
-            // 判斷是第幾次
             if (prizeHistory.length < MAX_ROUNDS) {
                 btn.innerText = `放入背包，轉第 ${prizeHistory.length + 1} 次`;
-                btn.onclick = nextRound; // 繼續
+                btn.onclick = nextRound;
             } else {
                 btn.innerText = "查看所有獎品 (3選1)";
-                btn.onclick = showSelectionModal; // 結束，去選獎品
+                btn.onclick = showSelectionModal;
             }
-            
             modal.style.display = 'flex';
         }
 
         function nextRound() {
-            // 關閉視窗，準備下一局
             document.getElementById('resultModal').style.display = 'none';
             currentRound++;
             updateRoundText();
-            
             const btn = document.getElementById('spinBtn');
             btn.disabled = false;
             btn.innerText = `開始第 ${currentRound + 1} 次`;
         }
 
-        // --- 最終選擇階段 ---
         function showSelectionModal() {
             document.getElementById('resultModal').style.display = 'none';
             const modal = document.getElementById('selectionModal');
             const list = document.getElementById('finalList');
-            
-            list.innerHTML = ""; // 清空
+            list.innerHTML = "";
 
-            // 產生 3 個選項
             prizeHistory.forEach((prize, index) => {
                 const item = document.createElement('div');
                 item.className = 'prize-item';
@@ -378,39 +405,30 @@
                         <div class="prize-sub">第 ${index + 1} 次轉出</div>
                     </div>
                 `;
-                // 點擊事件
                 item.onclick = () => selectPrize(index, item);
                 list.appendChild(item);
             });
-
             modal.style.display = 'flex';
         }
 
         function selectPrize(index, element) {
-            // 清除其他人的選取狀態
             document.querySelectorAll('.prize-item').forEach(el => el.classList.remove('selected'));
-            // 設定目前的選取
             element.classList.add('selected');
             selectedPrizeIndex = index;
-            
-            // 啟用按鈕
             const btn = document.getElementById('confirmBtn');
             btn.disabled = false;
             btn.innerText = "確認領取：" + prizeHistory[index].text;
-            btn.style.background = "#2ecc71"; // 變綠色
+            btn.style.background = "#2ecc71";
         }
 
         function confirmSelection() {
             if (selectedPrizeIndex === -1) return;
-
             const finalPrize = prizeHistory[selectedPrizeIndex];
             
-            // 紀錄已領取 (如果是真實上線，這裡應該傳送資料給後端)
             if (userId) {
                 localStorage.setItem('xmas_claimed_' + userId, 'true');
             }
 
-            // 跳轉領取
             if (finalPrize.link) {
                 if (liff.isInClient()) {
                     liff.openWindow({ url: finalPrize.link, external: false });
@@ -420,8 +438,6 @@
             } else {
                 alert("領取成功！(無連結)");
             }
-            
-            // 關閉
             liff.closeWindow(); 
         }
 
