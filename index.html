@@ -6,11 +6,10 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- V25 樣式區：經典聖誕綠 + 黃金邊框 + 放射金光特效 --- */
+        /* --- V26 樣式區：經典聖誕綠 + 柔和聖光特效 --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
-            /* 背景：深綠色放射漸層 */
             background: radial-gradient(circle at center, #2e7d32 0%, #0d2b18 100%);
             color: #fff;
             display: flex;
@@ -32,7 +31,6 @@
             text-align: center;
             font-weight: 800;
         }
-        /* 副標題 */
         .subtitle {
             color: #fff;
             font-size: 1rem;
@@ -56,7 +54,6 @@
             border: 1px solid rgba(248, 216, 92, 0.3);
         }
 
-        /* 機器外觀：黃金漸層邊框 */
         .machine-container {
             background: linear-gradient(to bottom, #fbe484, #d4a00d, #9e7606, #d4a00d, #fbe484);
             padding: 8px; 
@@ -67,10 +64,9 @@
             min-width: 280px;
             text-align: center;
             position: relative;
-            z-index: 10; /* 確保機器在雪花前面 */
+            z-index: 10;
         }
 
-        /* 機器內部：維持深紅色 */
         .machine-inner {
             background: linear-gradient(160deg, #c0392b, #912317);
             border-radius: 18px;
@@ -129,50 +125,50 @@
             color: #fff !important;
         }
 
-        /* --- 🔥 新增：放射金光背景特效 🔥 --- */
+        /* --- 🔥 光芒特效修正區 🔥 --- */
         .modal-radiance-bg {
             position: absolute;
             top: 50%;
             left: 50%;
-            /* 讓光芒非常大，超出螢幕 */
-            width: 200vmax; 
-            height: 200vmax;
-            /* 使用重複的圓錐漸層製作放射光芒 */
+            width: 180vmax; /* 超大範圍 */
+            height: 180vmax;
+            
+            /* 1. 柔和光束：透明 -> 黃色 -> 透明 (消除硬邊) */
             background: repeating-conic-gradient(
                 from 0deg,
-                rgba(251, 228, 132, 0.4) 0deg 10deg, /* 半透明金色光束 */
-                transparent 10deg 20deg /* 透明間隔 */
+                transparent 0deg,
+                rgba(255, 235, 59, 0.5) 10deg, /* 中間亮 */
+                transparent 20deg
             );
-            /* 居中並放到最底層 */
+            
+            /* 2. 遮罩 fade out：中心不透明(100%) -> 外圈透明(0%) */
+            -webkit-mask-image: radial-gradient(circle, black 10%, transparent 60%);
+            mask-image: radial-gradient(circle, black 10%, transparent 60%);
+
             transform: translate(-50%, -50%);
             z-index: -1; 
-            /* 緩慢旋轉動畫 */
-            animation: rotateRadiance 25s linear infinite;
-            pointer-events: none; /* 避免擋住點擊 */
-            opacity: 0; /* 初始隱藏 */
-            transition: opacity 0.6s ease-out; /* 淡入淡出效果 */
+            animation: rotateRadiance 20s linear infinite;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.8s ease-out;
         }
         
-        /* 光芒旋轉動畫 */
         @keyframes rotateRadiance {
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to   { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
-        /* 當彈窗啟動時，顯示光芒 */
-        .modal-overlay.active .modal-radiance-bg {
-            opacity: 1;
-        }
+        .modal-overlay.active .modal-radiance-bg { opacity: 1; }
 
-        /* --- 彈窗樣式調整 --- */
+        /* --- 彈窗本體 --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* 背景再深一點，對比光芒 */
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             justify-content: center; align-items: center;
             z-index: 1000; backdrop-filter: blur(5px);
             padding: 20px;
-            overflow: hidden; /* 隱藏超出的光芒 */
+            overflow: hidden;
         }
         .modal-content {
             background: #fff; color: #333;
@@ -181,12 +177,12 @@
             border-radius: 22px;
             text-align: center; position: relative;
             background: linear-gradient(135deg, #fbe484, #d4a00d);
-            box-shadow: 0 0 50px rgba(251, 228, 132, 0.5); /* 增加金色外發光 */
-            /* 🔥 更新為更有彈性的動畫 */
-            animation: popInBouncy 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            /* 增加金色外發光，讓它跟後面的光芒融合 */
+            box-shadow: 0 0 60px rgba(255, 193, 7, 0.6);
+            animation: popInBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             max-height: 90vh;
             overflow-y: auto;
-            z-index: 2; /* 確保在光芒上面 */
+            z-index: 2;
         }
         .modal-inner-content {
             background: #fff;
@@ -194,16 +190,15 @@
             padding: 25px 20px;
         }
 
-        /* 🔥 新增：Q彈果凍感出現動畫 */
         @keyframes popInBouncy { 
             0% { transform: scale(0.3); opacity: 0; } 
-            70% { transform: scale(1.05); } /* 稍微放大超過一點 */
-            100% { transform: scale(1); opacity: 1; } /* 回到正常大小 */
+            70% { transform: scale(1.05); } 
+            100% { transform: scale(1); opacity: 1; } 
         }
         
         .modal-img-placeholder {
             width: 100px; height: 100px;
-            background-color: #fff9c4; /* 淺金底 */
+            background-color: #fff9c4;
             margin: 0 auto 15px;
             display: flex; align-items: center; justify-content: center;
             font-size: 3.5rem;
@@ -314,7 +309,7 @@
         let userName = "";
         let selectedPrizeIndex = -1;
 
-        // --- 🎁 獎項設定 (V25 微調版) ---
+        // --- 🎁 獎項設定 ---
         const prizes = [
             { 
                 id: 'prize_wash', 
@@ -510,13 +505,12 @@
                 btn.onclick = showSelectionModal;
             }
             modal.style.display = 'flex';
-            // 延遲一點點加上 active class，讓光芒淡入
             setTimeout(() => modal.classList.add('active'), 10);
         }
 
         function nextRound() {
             const modal = document.getElementById('resultModal');
-            modal.classList.remove('active'); // 移除光芒
+            modal.classList.remove('active');
             modal.style.display = 'none';
             currentRound++;
             updateRoundText();
@@ -546,7 +540,6 @@
                 list.appendChild(item);
             });
             modal.style.display = 'flex';
-            // 延遲一點點加上 active class，讓光芒淡入
             setTimeout(() => modal.classList.add('active'), 10);
         }
 
