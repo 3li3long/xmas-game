@@ -6,7 +6,7 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- V27 樣式區：經典聖誕綠 + 紅黃硬邊光芒 + 置中文字 --- */
+        /* --- V28 樣式區：調整透明度與透視感 --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -125,7 +125,7 @@
             color: #fff !important;
         }
 
-        /* --- 🔥 光芒特效 (紅黃交錯，無漸層) 🔥 --- */
+        /* --- 光芒特效 --- */
         .modal-radiance-bg {
             position: absolute;
             top: 50%;
@@ -133,14 +133,14 @@
             width: 180vmax;
             height: 180vmax;
             
-            /* 紅黃交錯，硬邊 (Hard Stop) */
+            /* 紅黃交錯，硬邊 */
             background: repeating-conic-gradient(
                 from 0deg,
-                rgba(211, 47, 47, 0.6) 0deg 15deg,   /* 紅色區塊 15度 */
-                rgba(255, 215, 0, 0.6) 15deg 30deg   /* 黃色區塊 15度 */
+                rgba(211, 47, 47, 0.5) 0deg 15deg,   /* 稍微調低透明度 */
+                rgba(255, 215, 0, 0.5) 15deg 30deg
             );
             
-            /* 圓形遮罩：讓光芒像光暈一樣往外淡出，而不是一個方形 */
+            /* 圓形遮罩 */
             -webkit-mask-image: radial-gradient(circle, black 10%, transparent 70%);
             mask-image: radial-gradient(circle, black 10%, transparent 70%);
 
@@ -159,13 +159,16 @@
 
         .modal-overlay.active .modal-radiance-bg { opacity: 1; }
 
-        /* --- 彈窗本體 --- */
+        /* --- 🔥 彈窗本體修正 (透明度調整) 🔥 --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* 背景加深 */
+            /* 修正處：從 0.85 改成 0.6，讓背景可以透出來 */
+            background: rgba(0, 0, 0, 0.6); 
             display: none;
             justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(5px);
+            /* 修正處：模糊度從 5px 改成 2px，讓背景輪廓更清晰 */
+            backdrop-filter: blur(2px);
+            z-index: 1000;
             padding: 20px;
             overflow: hidden;
         }
@@ -208,13 +211,12 @@
 
         .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: 800; }
         
-        /* 🔥 修改：說明文字改為置中 (Center) */
         .modal-desc { 
             font-size: 0.95rem; 
             color: #555; 
             margin-bottom: 25px; 
             line-height: 1.6; 
-            text-align: center; /* <--- 這裡改了 */
+            text-align: center;
             padding: 15px;
             background: #f9f9f9;
             border-radius: 10px;
@@ -336,7 +338,7 @@
             }
         ];
 
-        // --- 核心邏輯 (維持不變) ---
+        // --- 核心邏輯 ---
         function initLineLiff() {
             document.getElementById('status-msg').innerText = "正在連接 LINE...";
             liff.init({ liffId: YOUR_LIFF_ID })
