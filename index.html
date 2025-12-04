@@ -6,7 +6,7 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- V26 樣式區：經典聖誕綠 + 柔和聖光特效 --- */
+        /* --- V27 樣式區：經典聖誕綠 + 紅黃硬邊光芒 + 置中文字 --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -125,32 +125,31 @@
             color: #fff !important;
         }
 
-        /* --- 🔥 光芒特效修正區 🔥 --- */
+        /* --- 🔥 光芒特效 (紅黃交錯，無漸層) 🔥 --- */
         .modal-radiance-bg {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 180vmax; /* 超大範圍 */
+            width: 180vmax;
             height: 180vmax;
             
-            /* 1. 柔和光束：透明 -> 黃色 -> 透明 (消除硬邊) */
+            /* 紅黃交錯，硬邊 (Hard Stop) */
             background: repeating-conic-gradient(
                 from 0deg,
-                transparent 0deg,
-                rgba(255, 235, 59, 0.5) 10deg, /* 中間亮 */
-                transparent 20deg
+                rgba(211, 47, 47, 0.6) 0deg 15deg,   /* 紅色區塊 15度 */
+                rgba(255, 215, 0, 0.6) 15deg 30deg   /* 黃色區塊 15度 */
             );
             
-            /* 2. 遮罩 fade out：中心不透明(100%) -> 外圈透明(0%) */
-            -webkit-mask-image: radial-gradient(circle, black 10%, transparent 60%);
-            mask-image: radial-gradient(circle, black 10%, transparent 60%);
+            /* 圓形遮罩：讓光芒像光暈一樣往外淡出，而不是一個方形 */
+            -webkit-mask-image: radial-gradient(circle, black 10%, transparent 70%);
+            mask-image: radial-gradient(circle, black 10%, transparent 70%);
 
             transform: translate(-50%, -50%);
             z-index: -1; 
             animation: rotateRadiance 20s linear infinite;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.8s ease-out;
+            transition: opacity 0.5s ease-out;
         }
         
         @keyframes rotateRadiance {
@@ -163,7 +162,7 @@
         /* --- 彈窗本體 --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85); /* 背景加深 */
             display: none;
             justify-content: center; align-items: center;
             z-index: 1000; backdrop-filter: blur(5px);
@@ -177,8 +176,7 @@
             border-radius: 22px;
             text-align: center; position: relative;
             background: linear-gradient(135deg, #fbe484, #d4a00d);
-            /* 增加金色外發光，讓它跟後面的光芒融合 */
-            box-shadow: 0 0 60px rgba(255, 193, 7, 0.6);
+            box-shadow: 0 0 60px rgba(255, 193, 7, 0.4);
             animation: popInBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             max-height: 90vh;
             overflow-y: auto;
@@ -210,12 +208,13 @@
 
         .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: 800; }
         
+        /* 🔥 修改：說明文字改為置中 (Center) */
         .modal-desc { 
             font-size: 0.95rem; 
             color: #555; 
             margin-bottom: 25px; 
             line-height: 1.6; 
-            text-align: left;
+            text-align: center; /* <--- 這裡改了 */
             padding: 15px;
             background: #f9f9f9;
             border-radius: 10px;
@@ -488,7 +487,6 @@
             }, 1000);
         }
 
-        // 🔥 新增：控制光芒動畫的 active class
         function showResultModal(prize) {
             const modal = document.getElementById('resultModal');
             document.getElementById('modalTitle').innerText = prize.text;
