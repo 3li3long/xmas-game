@@ -6,11 +6,11 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- 樣式區 (維持 V18 豪華紅金版) --- */
+        /* --- 樣式區 (V21 經典聖誕綠版) --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
-            background: radial-gradient(circle at center, #a32626 0%, #5c0e0e 100%);
+            background: radial-gradient(circle at center, #2e7d32 0%, #0d2b18 100%);
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -25,20 +25,21 @@
         }
         h1 {
             color: #f8d85c;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7), 0 0 10px rgba(248, 216, 92, 0.3);
-            margin-bottom: 5px; /* 稍微縮小間距 */
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 5px;
             font-size: clamp(1.5rem, 5vw, 2rem);
             text-align: center;
+            font-weight: 800;
         }
-        /* 新增副標題樣式 */
         .subtitle {
             color: #fff;
             font-size: 1rem;
             margin-bottom: 15px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            background: rgba(0,0,0,0.3);
-            padding: 5px 15px;
-            border-radius: 15px;
+            background: rgba(255,255,255,0.15);
+            padding: 5px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .info-text { font-size: 0.9rem; color: #ddd; margin-bottom: 10px; text-align: center;}
@@ -55,9 +56,9 @@
 
         .machine-container {
             background: linear-gradient(to bottom, #fbe484, #d4a00d, #9e7606, #d4a00d, #fbe484);
-            padding: 6px;
-            border-radius: 22px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(248, 216, 92, 0.5) inset;
+            padding: 8px; 
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(248, 216, 92, 0.4) inset;
             width: 95%;
             max-width: 350px;
             min-width: 280px;
@@ -125,28 +126,28 @@
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.8);
             display: none;
             justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(8px);
+            z-index: 1000; backdrop-filter: blur(5px);
             padding: 20px;
         }
         .modal-content {
             background: #fff; color: #333;
             width: 100%; max-width: 340px;
-            padding: 3px;
-            border-radius: 20px;
+            padding: 4px;
+            border-radius: 22px;
             text-align: center; position: relative;
             background: linear-gradient(135deg, #fbe484, #d4a00d);
-            box-shadow: 0 0 30px rgba(248, 216, 92, 0.4);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
             animation: popIn 0.3s ease-out;
             max-height: 90vh;
             overflow-y: auto;
         }
         .modal-inner-content {
             background: #fff;
-            border-radius: 17px;
-            padding: 20px 15px;
+            border-radius: 18px;
+            padding: 25px 20px;
         }
 
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -154,42 +155,50 @@
         .modal-img-placeholder {
             width: 100px; height: 100px;
             background-color: #fafafa;
-            margin: 0 auto 10px;
+            margin: 0 auto 15px;
             display: flex; align-items: center; justify-content: center;
             font-size: 3.5rem;
-            border-radius: 10px; border: 2px dashed #ccc;
+            border-radius: 50%;
+            border: 4px solid #fbe484;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        .modal-img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+        .modal-img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
-        .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: bold; }
+        .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: 800; }
         
         .modal-desc { 
             font-size: 0.95rem; 
             color: #555; 
-            margin-bottom: 20px; 
+            margin-bottom: 25px; 
             line-height: 1.6; 
             text-align: left;
-            padding: 0 10px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #eee;
         }
         
-        .action-btn { background: linear-gradient(to bottom, #2ecc71, #27ae60); color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; box-shadow: 0 4px 0 #1e8449; transition: transform 0.1s;}
+        .action-btn { background: linear-gradient(to bottom, #2ecc71, #27ae60); color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; box-shadow: 0 4px 0 #1e8449; transition: transform 0.1s; font-weight: bold;}
         .action-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #1e8449;}
         
-        .prize-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .prize-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; text-align: left;}
         .prize-item {
-            border: 2px solid #eee; border-radius: 10px; padding: 10px;
+            background: #fff;
+            border: 2px solid #eee;
+            border-radius: 15px; padding: 12px;
             display: flex; align-items: center; text-align: left;
             transition: all 0.2s; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .prize-item:hover { border-color: #d4a00d; background: #fffdf0; }
-        .prize-item.selected { border-color: #c0392b; background: #fff0f0; border-width: 3px; }
+        .prize-item:hover { border-color: #d4a00d; background: #fffdf0; transform: translateY(-2px);}
+        .prize-item.selected { border-color: #c0392b; background: #ffebee; border-width: 3px; box-shadow: 0 5px 10px rgba(211, 47, 47, 0.2);}
         
-        .prize-icon { font-size: 2rem; margin-right: 15px; width: 40px; text-align: center;}
+        .prize-icon { font-size: 2.2rem; margin-right: 15px; width: 50px; text-align: center;}
         .prize-info { flex: 1; }
-        .prize-name { font-weight: bold; color: #333; font-size: 1rem;}
-        .prize-sub { font-size: 0.8rem; color: #777; }
+        .prize-name { font-weight: 800; color: #d32f2f; font-size: 1.1rem; margin-bottom: 4px;}
+        .prize-sub { font-size: 0.85rem; color: #777; }
         
-        .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.2"/></svg>'); animation: snow 10s linear infinite; }
+        .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
         @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
     </style>
 </head>
@@ -235,7 +244,7 @@
         <div class="modal-content">
             <div class="modal-inner-content">
                 <div class="modal-title">🎉 恭喜完成！</div>
-                <div class="modal-desc">您有 3 次中獎紀錄，請 **擇一** 領取：<br>(點選後將無法更改)</div>
+                <div class="modal-desc" style="text-align: center; background: none; border: none;">您有 3 次中獎紀錄，請 **擇一** 領取：<br>(點選後將無法更改)</div>
                 <div class="prize-list" id="finalList"></div>
                 <button class="action-btn" onclick="confirmSelection()" disabled id="confirmBtn">請先選擇一個獎品</button>
             </div>
@@ -254,37 +263,37 @@
         let userName = "";
         let selectedPrizeIndex = -1;
 
-        // --- 🎁 獎項設定 (V19 滿千贈禮版) ---
-        // weight 設定：數字越大越容易中
+        // --- 🎁 獎項設定 (V23 中性好禮版) ---
+        // 移除「一二三獎」標籤，改為平行展示
         const prizes = [
-            // 🔴 一獎：大獎 (REN/JMO)
+            // 🔴 獎項 A (洗沐)
             { 
-                id: 'prize_1_wash', 
-                weight: 10,  // 較稀有
+                id: 'prize_wash', 
+                weight: 10,  
                 symbol: '🧴', 
-                text: '一獎：星級洗沐正貨', 
-                desc: '恭喜獲得一獎！<br>REN 或 JMO 洗沐系列依現場庫存擇一贈送！<br><span style="color:#aaa; font-size:0.8rem;">(價值不菲，犒賞自己首選)</span>', 
-                link: 'https://lin.ee/你的獎品1連結' 
+                text: '進口星級洗沐四件組', 
+                desc: '恭喜獲得質感好禮！<br>REN 或 JMO 洗沐系列依現場庫存擇一贈送！<br><span style="color:#777; font-size:0.9rem;">(價值不菲，犒賞自己首選)</span>', 
+                link: 'https://lin.ee/你的洗沐組連結' 
             },
             
-            // 🔴 二獎：盥洗包+拖鞋 (中等機率)
+            // 🔴 獎項 B (盥洗包+拖鞋)
             { 
-                id: 'prize_2_set', 
+                id: 'prize_set', 
                 weight: 30, 
                 symbol: '👝', 
-                text: '二獎：盥洗包+拖鞋組', 
-                desc: '恭喜獲得二獎！<br>含：盥洗包*2組 + 環保拖鞋*2雙 (顏色尺寸任選)！<br><span style="color:#aaa; font-size:0.8rem;">(實用組合，馬上就能用)</span>', 
-                link: 'https://lin.ee/你的獎品2連結' 
+                text: '旅用盥洗包*2+拖鞋*2雙', 
+                desc: '恭喜獲得實用好禮！<br>含：旅用盥洗包*2組 + 環保拖鞋*2雙 (顏色尺寸任選)！<br><span style="color:#777; font-size:0.9rem;">(實用組合，馬上就能用)</span>', 
+                link: 'https://lin.ee/你的盥洗包組連結' 
             },
 
-            // 🔴 三獎：旅用組 (最容易中 - 清庫存主力)
+            // 🔴 獎項 C (牙刷組)
             { 
-                id: 'prize_3_travel', 
-                weight: 60, // 最容易中
+                id: 'prize_toothbrush', 
+                weight: 60,
                 symbol: '🧳', 
-                text: '三獎：精緻旅用組 (3組)', 
-                desc: '恭喜獲得三獎！<br>一次帶走「旅用組 * 3組」，出遊旅行必備良伴！<br><span style="color:#aaa; font-size:0.8rem;">(數量充足，人人有獎)</span>', 
-                link: 'https://lin.ee/你的獎品3連結' 
+                text: '旅用牙刷牙膏組(*3)', 
+                desc: '恭喜獲得貼心好禮！<br>一次帶走「旅用牙刷牙膏組 * 3組」！<br><span style="color:#777; font-size:0.9rem;">(數量充足，人人有獎)</span>', 
+                link: 'https://lin.ee/你的牙刷組連結' 
             }
         ];
 
