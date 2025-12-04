@@ -6,10 +6,11 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- 樣式區 (V21 經典聖誕綠版) --- */
+        /* --- V24 樣式區：經典聖誕綠 + 黃金邊框 --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
+            /* 背景：深綠色放射漸層 */
             background: radial-gradient(circle at center, #2e7d32 0%, #0d2b18 100%);
             color: #fff;
             display: flex;
@@ -31,6 +32,7 @@
             text-align: center;
             font-weight: 800;
         }
+        /* 副標題 */
         .subtitle {
             color: #fff;
             font-size: 1rem;
@@ -54,6 +56,7 @@
             border: 1px solid rgba(248, 216, 92, 0.3);
         }
 
+        /* 機器外觀：黃金漸層邊框 */
         .machine-container {
             background: linear-gradient(to bottom, #fbe484, #d4a00d, #9e7606, #d4a00d, #fbe484);
             padding: 8px; 
@@ -66,6 +69,7 @@
             position: relative;
         }
 
+        /* 機器內部：維持深紅色 */
         .machine-inner {
             background: linear-gradient(160deg, #c0392b, #912317);
             border-radius: 18px;
@@ -195,7 +199,7 @@
         
         .prize-icon { font-size: 2.2rem; margin-right: 15px; width: 50px; text-align: center;}
         .prize-info { flex: 1; }
-        .prize-name { font-weight: 800; color: #d32f2f; font-size: 1.1rem; margin-bottom: 4px;}
+        .prize-name { font-weight: 800; color: #333; font-size: 1.1rem; margin-bottom: 4px;}
         .prize-sub { font-size: 0.85rem; color: #777; }
         
         .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
@@ -263,8 +267,8 @@
         let userName = "";
         let selectedPrizeIndex = -1;
 
-        // --- 🎁 獎項設定 (V23 中性好禮版) ---
-        // 移除「一二三獎」標籤，改為平行展示
+        // --- 🎁 獎項設定 (V24 中性好禮版) ---
+        // 移除「一二三獎」字眼
         const prizes = [
             // 🔴 獎項 A (洗沐)
             { 
@@ -272,7 +276,7 @@
                 weight: 10,  
                 symbol: '🧴', 
                 text: '進口星級洗沐四件組', 
-                desc: '恭喜獲得質感好禮！<br>REN 或 JMO 洗沐系列依現場庫存擇一贈送！<br><span style="color:#777; font-size:0.9rem;">(價值不菲，犒賞自己首選)</span>', 
+                desc: '恭喜獲得質感好禮！<br>REN 或 JMO 洗沐系列依現場庫存擇一贈送！數量有限送完為止！<br><span style="color:#777; font-size:0.9rem;">(價值不菲，犒賞自己首選)</span>', 
                 link: 'https://lin.ee/你的洗沐組連結' 
             },
             
@@ -320,9 +324,6 @@
                 .then(profile => {
                     userId = profile.userId;
                     userName = profile.displayName;
-
-                    // 封閉測試 (預留)
-                    /* const whiteList = ["U..."]; if(!whiteList.includes(userId)) return; */
 
                     document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的聖誕拉霸 🎄`;
                     document.getElementById('status-msg').innerText = `Hello, ${userName}！祝你好運！`;
@@ -405,7 +406,6 @@
             }
         }
 
-        // 不重複獎項邏輯
         function getRandomPrize() {
             const wonIds = prizeHistory.map(p => p.id);
             const availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
