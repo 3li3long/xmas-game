@@ -6,10 +6,10 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
+        /* --- 樣式區 (維持 V18 豪華紅金版) --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
-            /* 🔥 背景修改：改為暗紅色放射狀漸層，更有高級感 */
             background: radial-gradient(circle at center, #a32626 0%, #5c0e0e 100%);
             color: #fff;
             display: flex;
@@ -24,32 +24,39 @@
             overflow-y: auto;
         }
         h1 {
-            /* 標題增加一點金色質感 */
             color: #f8d85c;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.7), 0 0 10px rgba(248, 216, 92, 0.3);
-            margin-bottom: 10px;
+            margin-bottom: 5px; /* 稍微縮小間距 */
             font-size: clamp(1.5rem, 5vw, 2rem);
             text-align: center;
         }
-        .info-text { font-size: 1rem; color: #ddd; margin-bottom: 15px; text-align: center;}
+        /* 新增副標題樣式 */
+        .subtitle {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+
+        .info-text { font-size: 0.9rem; color: #ddd; margin-bottom: 10px; text-align: center;}
         
         .round-indicator {
-            background: rgba(0,0,0,0.4); /* 加深一點背景 */
+            background: rgba(0,0,0,0.4);
             padding: 5px 15px;
             border-radius: 20px;
             margin-bottom: 10px;
             font-size: 0.9rem;
             color: #f8d85c;
-            border: 1px solid rgba(248, 216, 92, 0.3); /* 增加細邊框 */
+            border: 1px solid rgba(248, 216, 92, 0.3);
         }
 
-        /* 🔥 機器外殼大改：利用「雙層結構」製作黃金漸層邊框 */
         .machine-container {
-            /* 1. 外層：負責顯示「金色漸層邊框」和陰影 */
             background: linear-gradient(to bottom, #fbe484, #d4a00d, #9e7606, #d4a00d, #fbe484);
-            padding: 6px; /* 這個 padding 的寬度就是邊框的厚度 */
+            padding: 6px;
             border-radius: 22px;
-            /* 增加金色發光效果，看起來更立體 */
             box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(248, 216, 92, 0.5) inset;
             width: 95%;
             max-width: 350px;
@@ -58,16 +65,14 @@
             position: relative;
         }
 
-        /* 🔥 新增內層：負責顯示機器本體的紅色和內容 */
         .machine-inner {
-            /* 機器本體改為更有質感的深紅漸層 */
             background: linear-gradient(160deg, #c0392b, #912317);
-            border-radius: 18px; /* 比外層小一點 */
+            border-radius: 18px;
             padding: 15px;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.4); /* 內陰影增加深度 */
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.4);
         }
 
         .slots-window {
@@ -77,7 +82,6 @@
             justify-content: space-around;
             align-items: center;
             padding: 10px 5px;
-            /* 窗口增加邊框感 */
             border: 3px solid #e0e0e0;
             box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
             width: 100%;
@@ -91,20 +95,18 @@
             border-right: 2px solid #ddd;
             color: #333;
             display: flex; align-items: center; justify-content: center;
-            /* 增加一點立體感 */
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         .reel:last-child { border-right: none; }
         .reel img { width: 80%; height: 80%; object-fit: contain; }
         
-        /* 按鈕也升級一下金色質感 */
         .spin-btn {
             background: linear-gradient(to bottom, #fbe484, #d4a00d);
             border: none;
             padding: 15px 0;
             width: 100%;
             font-size: 1.5rem;
-            color: #5c3a00; /* 字體顏色深一點比較清楚 */
+            color: #5c3a00;
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
@@ -121,10 +123,9 @@
             color: #fff !important;
         }
 
-        /* --- 彈窗樣式微調 --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* 背景更深一點 */
+            background: rgba(0, 0, 0, 0.85);
             display: none;
             justify-content: center; align-items: center;
             z-index: 1000; backdrop-filter: blur(8px);
@@ -133,18 +134,15 @@
         .modal-content {
             background: #fff; color: #333;
             width: 100%; max-width: 340px;
-            padding: 25px 20px; border-radius: 20px;
+            padding: 3px;
+            border-radius: 20px;
             text-align: center; position: relative;
-            /* 彈窗邊框也改成金色漸層感 */
-            border: none;
-            padding: 3px; /* 用 padding 模擬邊框 */
             background: linear-gradient(135deg, #fbe484, #d4a00d);
             box-shadow: 0 0 30px rgba(248, 216, 92, 0.4);
             animation: popIn 0.3s ease-out;
             max-height: 90vh;
             overflow-y: auto;
         }
-        /* 彈窗內部白色區域 */
         .modal-inner-content {
             background: #fff;
             border-radius: 17px;
@@ -191,7 +189,6 @@
         .prize-name { font-weight: bold; color: #333; font-size: 1rem;}
         .prize-sub { font-size: 0.8rem; color: #777; }
         
-        /* 雪花稍微調淡一點，配合紅背景 */
         .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.2"/></svg>'); animation: snow 10s linear infinite; }
         @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
     </style>
@@ -199,6 +196,9 @@
 <body>
     <div class="snow"></div>
     <h1 id="welcome-msg">🎄 聖誕好禮拉霸 🎄</h1>
+    
+    <div class="subtitle">✨ 消費滿千即可參加 ✨</div>
+    
     <div class="info-text" id="status-msg">連線中...</div>
     <div class="round-indicator" id="round-text">準備開始 (0/3)</div>
 
@@ -254,60 +254,41 @@
         let userName = "";
         let selectedPrizeIndex = -1;
 
-        // --- 獎項設定 (維持 V17 B2B 定案版) ---
+        // --- 🎁 獎項設定 (V19 滿千贈禮版) ---
+        // weight 設定：數字越大越容易中
         const prizes = [
-            // 🔴 頭獎
+            // 🔴 一獎：大獎 (REN/JMO)
             { 
-                id: 'gift_sample_box', 
-                weight: 5, 
-                symbol: '📦', 
-                text: '熱銷樣品盲盒', 
-                desc: '恭喜老闆！隨貨附贈一組【熱銷樣品盲盒】(市值$500up)！<br><span style="color:#aaa; font-size:0.8rem;">(內含隨機款式，讓您試賣免成本)</span>', 
-                link: 'https://lin.ee/你的樣品領取連結' 
+                id: 'prize_1_wash', 
+                weight: 10,  // 較稀有
+                symbol: '🧴', 
+                text: '一獎：星級洗沐正貨', 
+                desc: '恭喜獲得一獎！<br>REN 或 JMO 洗沐系列依現場庫存擇一贈送！<br><span style="color:#aaa; font-size:0.8rem;">(價值不菲，犒賞自己首選)</span>', 
+                link: 'https://lin.ee/你的獎品1連結' 
             },
             
-            // 🔴 二獎
+            // 🔴 二獎：盥洗包+拖鞋 (中等機率)
             { 
-                id: 'cash_168', 
-                weight: 10, 
-                symbol: '🧧', 
-                text: '$168 一路發發財金', 
-                desc: '恭喜發財！送您 $168 採購金，祝您生意興隆一路發！<br><span style="color:#aaa; font-size:0.8rem;">(限下次進貨折抵)</span>', 
-                link: 'https://lin.ee/你的168連結' 
-            },
-
-            // 🔴 三獎
-            { 
-                id: 'cash_88', 
+                id: 'prize_2_set', 
                 weight: 30, 
-                symbol: '🧧', 
-                text: '$88 發發發財金', 
-                desc: '大吉大利！送您 $88 開運金，補貨省一筆！<br><span style="color:#aaa; font-size:0.8rem;">(限下次進貨折抵)</span>', 
-                link: 'https://lin.ee/你的88連結' 
-            },
-            
-            // 🔴 四獎
-            { 
-                id: 'cash_66', 
-                weight: 60, 
-                symbol: '🧧', 
-                text: '$66 六六大順金', 
-                desc: '六六大順！送您 $66 順心金，祝您出貨順利！<br><span style="color:#aaa; font-size:0.8rem;">(限下次進貨折抵)</span>', 
-                link: 'https://lin.ee/你的66連結' 
+                symbol: '👝', 
+                text: '二獎：盥洗包+拖鞋組', 
+                desc: '恭喜獲得二獎！<br>含：盥洗包*2組 + 環保拖鞋*2雙 (顏色尺寸任選)！<br><span style="color:#aaa; font-size:0.8rem;">(實用組合，馬上就能用)</span>', 
+                link: 'https://lin.ee/你的獎品2連結' 
             },
 
-            // 🔴 五獎
+            // 🔴 三獎：旅用組 (最容易中 - 清庫存主力)
             { 
-                id: 'gift_supplies', 
-                weight: 100,
-                symbol: '🖊️', 
-                text: '品牌實用小物組', 
-                desc: '感謝支持！隨貨附贈【品牌原子筆/筆記本/膠帶】一組！<br><span style="color:#aaa; font-size:0.8rem;">(開店必備好物，隨貨寄出)</span>', 
-                link: 'https://lin.ee/你的小物連結' 
+                id: 'prize_3_travel', 
+                weight: 60, // 最容易中
+                symbol: '🧳', 
+                text: '三獎：精緻旅用組 (3組)', 
+                desc: '恭喜獲得三獎！<br>一次帶走「旅用組 * 3組」，出遊旅行必備良伴！<br><span style="color:#aaa; font-size:0.8rem;">(數量充足，人人有獎)</span>', 
+                link: 'https://lin.ee/你的獎品3連結' 
             }
         ];
 
-        // --- 以下程式碼邏輯維持不變 ---
+        // --- 核心邏輯 (維持不變) ---
         function initLineLiff() {
             document.getElementById('status-msg').innerText = "正在連接 LINE...";
             liff.init({ liffId: YOUR_LIFF_ID })
@@ -331,7 +312,7 @@
                     userId = profile.userId;
                     userName = profile.displayName;
 
-                    // 封閉測試區
+                    // 封閉測試 (預留)
                     /* const whiteList = ["U..."]; if(!whiteList.includes(userId)) return; */
 
                     document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的聖誕拉霸 🎄`;
@@ -368,7 +349,7 @@
             statusMsg.innerText = prizeName ? `您已獲得：${prizeName}` : "已完成領取";
 
             if (prizeLink) {
-                btn.innerText = "🎫 查看我的優惠券";
+                btn.innerText = "🎫 查看我的兌換券";
                 btn.className = "spin-btn btn-claimed";
                 btn.disabled = false;
                 btn.onclick = function() {
@@ -379,7 +360,7 @@
                     }
                 };
             } else {
-                btn.innerText = "明日再來";
+                btn.innerText = "已完成";
                 btn.disabled = true;
             }
         }
@@ -415,6 +396,7 @@
             }
         }
 
+        // 不重複獎項邏輯
         function getRandomPrize() {
             const wonIds = prizeHistory.map(p => p.id);
             const availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
