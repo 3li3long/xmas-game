@@ -6,7 +6,7 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- V28 樣式區：調整透明度與透視感 --- */
+        /* --- V29 樣式區：實心明亮、紅黃慶典光芒 --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -125,28 +125,28 @@
             color: #fff !important;
         }
 
-        /* --- 光芒特效 --- */
+        /* --- 🔥 實色明亮光芒 (紅黃交錯) 🔥 --- */
         .modal-radiance-bg {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 180vmax;
-            height: 180vmax;
+            width: 150vmax; /* 範圍大一點 */
+            height: 150vmax;
             
-            /* 紅黃交錯，硬邊 */
+            /* 1. 紅黃紅黃，顏色飽和，不透明 */
             background: repeating-conic-gradient(
                 from 0deg,
-                rgba(211, 47, 47, 0.5) 0deg 15deg,   /* 稍微調低透明度 */
-                rgba(255, 215, 0, 0.5) 15deg 30deg
+                #ffca28 0deg 20deg,   /* 亮黃色 */
+                #e53935 20deg 40deg   /* 亮紅色 */
             );
             
-            /* 圓形遮罩 */
-            -webkit-mask-image: radial-gradient(circle, black 10%, transparent 70%);
-            mask-image: radial-gradient(circle, black 10%, transparent 70%);
+            /* 2. 邊緣稍微柔化，但中間保持 100% 亮 */
+            -webkit-mask-image: radial-gradient(circle, black 30%, transparent 70%);
+            mask-image: radial-gradient(circle, black 30%, transparent 70%);
 
             transform: translate(-50%, -50%);
             z-index: -1; 
-            animation: rotateRadiance 20s linear infinite;
+            animation: rotateRadiance 15s linear infinite; /* 轉速適中 */
             pointer-events: none;
             opacity: 0;
             transition: opacity 0.5s ease-out;
@@ -159,33 +159,37 @@
 
         .modal-overlay.active .modal-radiance-bg { opacity: 1; }
 
-        /* --- 🔥 彈窗本體修正 (透明度調整) 🔥 --- */
+        /* --- 彈窗本體 (回歸不透明實體) --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            /* 修正處：從 0.85 改成 0.6，讓背景可以透出來 */
-            background: rgba(0, 0, 0, 0.6); 
+            /* 背景只要稍微暗一點就好，不要太黑 */
+            background: rgba(0, 0, 0, 0.5); 
             display: none;
             justify-content: center; align-items: center;
-            /* 修正處：模糊度從 5px 改成 2px，讓背景輪廓更清晰 */
-            backdrop-filter: blur(2px);
-            z-index: 1000;
+            z-index: 1000; 
+            /* 移除 blur，讓畫面看起來清楚明亮 */
+            /* backdrop-filter: blur(2px); */ 
             padding: 20px;
             overflow: hidden;
         }
         .modal-content {
-            background: #fff; color: #333;
+            /* 實心白底，絕不透明 */
+            background: #fff; 
+            color: #333;
             width: 100%; max-width: 340px;
-            padding: 4px;
+            padding: 5px;
             border-radius: 22px;
             text-align: center; position: relative;
+            /* 金色邊框底 */
             background: linear-gradient(135deg, #fbe484, #d4a00d);
-            box-shadow: 0 0 60px rgba(255, 193, 7, 0.4);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             animation: popInBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             max-height: 90vh;
             overflow-y: auto;
             z-index: 2;
         }
         .modal-inner-content {
+            /* 內容區也是實心白 */
             background: #fff;
             border-radius: 18px;
             padding: 25px 20px;
@@ -211,12 +215,13 @@
 
         .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: 800; }
         
+        /* 置中對齊 */
         .modal-desc { 
             font-size: 0.95rem; 
             color: #555; 
             margin-bottom: 25px; 
             line-height: 1.6; 
-            text-align: center;
+            text-align: center; /* 置中 */
             padding: 15px;
             background: #f9f9f9;
             border-radius: 10px;
@@ -338,7 +343,7 @@
             }
         ];
 
-        // --- 核心邏輯 ---
+        // --- 核心邏輯 (維持不變) ---
         function initLineLiff() {
             document.getElementById('status-msg').innerText = "正在連接 LINE...";
             liff.init({ liffId: YOUR_LIFF_ID })
