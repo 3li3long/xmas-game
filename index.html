@@ -6,11 +6,11 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- 樣式區 (維持 V13 不變) --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #1a472a;
+            /* 🔥 背景修改：改為暗紅色放射狀漸層，更有高級感 */
+            background: radial-gradient(circle at center, #a32626 0%, #5c0e0e 100%);
             color: #fff;
             display: flex;
             flex-direction: column;
@@ -24,8 +24,9 @@
             overflow-y: auto;
         }
         h1 {
-            color: #f0c419;
-            text-shadow: 2px 2px 4px #000;
+            /* 標題增加一點金色質感 */
+            color: #f8d85c;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7), 0 0 10px rgba(248, 216, 92, 0.3);
             margin-bottom: 10px;
             font-size: clamp(1.5rem, 5vw, 2rem);
             text-align: center;
@@ -33,29 +34,42 @@
         .info-text { font-size: 1rem; color: #ddd; margin-bottom: 15px; text-align: center;}
         
         .round-indicator {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0,0,0,0.4); /* 加深一點背景 */
             padding: 5px 15px;
             border-radius: 20px;
             margin-bottom: 10px;
             font-size: 0.9rem;
-            color: #f0c419;
+            color: #f8d85c;
+            border: 1px solid rgba(248, 216, 92, 0.3); /* 增加細邊框 */
         }
 
+        /* 🔥 機器外殼大改：利用「雙層結構」製作黃金漸層邊框 */
         .machine-container {
-            background-color: #c0392b;
-            padding: 15px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            border: 5px solid #f0c419;
+            /* 1. 外層：負責顯示「金色漸層邊框」和陰影 */
+            background: linear-gradient(to bottom, #fbe484, #d4a00d, #9e7606, #d4a00d, #fbe484);
+            padding: 6px; /* 這個 padding 的寬度就是邊框的厚度 */
+            border-radius: 22px;
+            /* 增加金色發光效果，看起來更立體 */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 20px rgba(248, 216, 92, 0.5) inset;
             width: 95%;
             max-width: 350px;
             min-width: 280px;
             text-align: center;
             position: relative;
+        }
+
+        /* 🔥 新增內層：負責顯示機器本體的紅色和內容 */
+        .machine-inner {
+            /* 機器本體改為更有質感的深紅漸層 */
+            background: linear-gradient(160deg, #c0392b, #912317);
+            border-radius: 18px; /* 比外層小一點 */
+            padding: 15px;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.4); /* 內陰影增加深度 */
         }
+
         .slots-window {
             background-color: #fff;
             border-radius: 10px;
@@ -63,7 +77,9 @@
             justify-content: space-around;
             align-items: center;
             padding: 10px 5px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            /* 窗口增加邊框感 */
+            border: 3px solid #e0e0e0;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
             width: 100%;
         }
         .reel {
@@ -75,36 +91,43 @@
             border-right: 2px solid #ddd;
             color: #333;
             display: flex; align-items: center; justify-content: center;
+            /* 增加一點立體感 */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
         .reel:last-child { border-right: none; }
         .reel img { width: 80%; height: 80%; object-fit: contain; }
+        
+        /* 按鈕也升級一下金色質感 */
         .spin-btn {
-            background: linear-gradient(to bottom, #f0c419, #d4ac0d);
+            background: linear-gradient(to bottom, #fbe484, #d4a00d);
             border: none;
             padding: 15px 0;
             width: 100%;
             font-size: 1.5rem;
-            color: #333;
+            color: #5c3a00; /* 字體顏色深一點比較清楚 */
             font-weight: bold;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 5px 0 #997c09;
+            box-shadow: 0 6px 0 #9e7606, 0 2px 10px rgba(248, 216, 92, 0.4);
+            text-shadow: 0 1px 1px rgba(255,255,255,0.5);
+            transition: all 0.1s;
         }
-        .spin-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #997c09; }
-        .spin-btn:disabled { background: #95a5a6; color: #555; cursor: not-allowed; box-shadow: none; transform: translateY(5px); }
+        .spin-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #9e7606; }
+        .spin-btn:disabled { background: #95a5a6; color: #555; cursor: not-allowed; box-shadow: none; transform: translateY(5px); text-shadow: none;}
         
         .btn-claimed {
-            background: linear-gradient(to bottom, #27ae60, #2ecc71) !important;
-            box-shadow: 0 5px 0 #1e8449 !important;
+            background: linear-gradient(to bottom, #2ecc71, #27ae60) !important;
+            box-shadow: 0 6px 0 #1e8449 !important;
             color: #fff !important;
         }
 
+        /* --- 彈窗樣式微調 --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85); /* 背景更深一點 */
             display: none;
             justify-content: center; align-items: center;
-            z-index: 1000; backdrop-filter: blur(5px);
+            z-index: 1000; backdrop-filter: blur(8px);
             padding: 20px;
         }
         .modal-content {
@@ -112,12 +135,22 @@
             width: 100%; max-width: 340px;
             padding: 25px 20px; border-radius: 20px;
             text-align: center; position: relative;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-            border: 4px solid #c0392b;
+            /* 彈窗邊框也改成金色漸層感 */
+            border: none;
+            padding: 3px; /* 用 padding 模擬邊框 */
+            background: linear-gradient(135deg, #fbe484, #d4a00d);
+            box-shadow: 0 0 30px rgba(248, 216, 92, 0.4);
             animation: popIn 0.3s ease-out;
             max-height: 90vh;
             overflow-y: auto;
         }
+        /* 彈窗內部白色區域 */
+        .modal-inner-content {
+            background: #fff;
+            border-radius: 17px;
+            padding: 20px 15px;
+        }
+
         @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
         .modal-img-placeholder {
@@ -137,11 +170,12 @@
             color: #555; 
             margin-bottom: 20px; 
             line-height: 1.6; 
-            text-align: left; /* 條列式文字靠左比較好看 */
+            text-align: left;
             padding: 0 10px;
         }
         
-        .action-btn { background: #2ecc71; color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; }
+        .action-btn { background: linear-gradient(to bottom, #2ecc71, #27ae60); color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; box-shadow: 0 4px 0 #1e8449; transition: transform 0.1s;}
+        .action-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #1e8449;}
         
         .prize-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
         .prize-item {
@@ -149,7 +183,7 @@
             display: flex; align-items: center; text-align: left;
             transition: all 0.2s; cursor: pointer;
         }
-        .prize-item:hover { border-color: #f0c419; background: #fffdf0; }
+        .prize-item:hover { border-color: #d4a00d; background: #fffdf0; }
         .prize-item.selected { border-color: #c0392b; background: #fff0f0; border-width: 3px; }
         
         .prize-icon { font-size: 2rem; margin-right: 15px; width: 40px; text-align: center;}
@@ -157,7 +191,8 @@
         .prize-name { font-weight: bold; color: #333; font-size: 1rem;}
         .prize-sub { font-size: 0.8rem; color: #777; }
         
-        .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
+        /* 雪花稍微調淡一點，配合紅背景 */
+        .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.2"/></svg>'); animation: snow 10s linear infinite; }
         @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
     </style>
 </head>
@@ -168,12 +203,14 @@
     <div class="round-indicator" id="round-text">準備開始 (0/3)</div>
 
     <div class="machine-container">
-        <div class="slots-window">
-            <div class="reel" id="reel1">🎅</div>
-            <div class="reel" id="reel2">🎅</div>
-            <div class="reel" id="reel3">🎅</div>
+        <div class="machine-inner">
+            <div class="slots-window">
+                <div class="reel" id="reel1">🎅</div>
+                <div class="reel" id="reel2">🎅</div>
+                <div class="reel" id="reel3">🎅</div>
+            </div>
+            <button class="spin-btn" id="spinBtn" onclick="playGame()" disabled>載入中...</button>
         </div>
-        <button class="spin-btn" id="spinBtn" onclick="playGame()" disabled>載入中...</button>
     </div>
 
     <div style="margin-top: 40px; text-align: center; z-index: 999;">
@@ -185,19 +222,23 @@
 
     <div class="modal-overlay" id="resultModal">
         <div class="modal-content">
-            <div class="modal-img-placeholder" id="modalImg">🎁</div>
-            <div class="modal-title" id="modalTitle">標題</div>
-            <div class="modal-desc" id="modalDesc">敘述</div>
-            <button class="action-btn" id="modalBtn" onclick="nextRound()">放入背包，繼續轉</button>
+            <div class="modal-inner-content">
+                <div class="modal-img-placeholder" id="modalImg">🎁</div>
+                <div class="modal-title" id="modalTitle">標題</div>
+                <div class="modal-desc" id="modalDesc">敘述</div>
+                <button class="action-btn" id="modalBtn" onclick="nextRound()">放入背包，繼續轉</button>
+            </div>
         </div>
     </div>
 
     <div class="modal-overlay" id="selectionModal">
         <div class="modal-content">
-            <div class="modal-title">🎉 恭喜完成！</div>
-            <div class="modal-desc">您有 3 次中獎紀錄，請 **擇一** 領取：<br>(點選後將無法更改)</div>
-            <div class="prize-list" id="finalList"></div>
-            <button class="action-btn" onclick="confirmSelection()" disabled id="confirmBtn">請先選擇一個獎品</button>
+            <div class="modal-inner-content">
+                <div class="modal-title">🎉 恭喜完成！</div>
+                <div class="modal-desc">您有 3 次中獎紀錄，請 **擇一** 領取：<br>(點選後將無法更改)</div>
+                <div class="prize-list" id="finalList"></div>
+                <button class="action-btn" onclick="confirmSelection()" disabled id="confirmBtn">請先選擇一個獎品</button>
+            </div>
         </div>
     </div>
 
@@ -213,57 +254,60 @@
         let userName = "";
         let selectedPrizeIndex = -1;
 
-        // --- 🔥 獎項設定 (V14 整合版) ---
-        // weight: 100 代表跟100元購物金一樣容易中
+        // --- 獎項設定 (維持 V17 B2B 定案版) ---
         const prizes = [
-            // 最大獎
+            // 🔴 頭獎
             { 
-                id: 'off_85', 
-                weight: 1, 
-                symbol: '👑', 
-                text: '整單 85 折券', 
-                desc: '超級大獎！全館消費不限金額 85 折！', 
-                link: 'https://lin.ee/你的85折券連結' 
+                id: 'gift_sample_box', 
+                weight: 5, 
+                symbol: '📦', 
+                text: '熱銷樣品盲盒', 
+                desc: '恭喜老闆！隨貨附贈一組【熱銷樣品盲盒】(市值$500up)！<br><span style="color:#aaa; font-size:0.8rem;">(內含隨機款式，讓您試賣免成本)</span>', 
+                link: 'https://lin.ee/你的樣品領取連結' 
             },
             
-            // 實體霸氣禮包 (四合一，單一連結)
+            // 🔴 二獎
             { 
-                id: 'gift_mix_all', 
-                weight: 100, // 權重設為 100 (與參加獎相同)
-                symbol: '🎁', 
-                text: '精選實體好禮', 
-                desc: '恭喜獲得實體好禮！消費滿千可選實體好禮四選一：<br><br>▪ 旅用盥洗包*10<br>▪ 旅用牙膏牙刷組*10<br>▪ JMO星級飯店洗沐四件組<br>▪ REN星級飯店洗沐四件組<br><br><span style="color:#aaa; font-size:0.8rem;">(請出示畫面兌換，數量有限送完為止)</span>', 
-                link: 'https://lin.ee/你的實體好禮兌換連結' // 👉 這裡只要填一張券的網址
+                id: 'cash_168', 
+                weight: 10, 
+                symbol: '🧧', 
+                text: '$168 一路發發財金', 
+                desc: '恭喜發財！送您 $168 採購金，祝您生意興隆一路發！<br><span style="color:#aaa; font-size:0.8rem;">(限下次進貨折抵)</span>', 
+                link: 'https://lin.ee/你的168連結' 
             },
 
-            // 滿額購物金區
+            // 🔴 三獎
             { 
-                id: 'cash_500', 
-                weight: 20, 
-                symbol: '💰', 
-                text: '500元 滿額購物金', 
-                desc: '恭喜發財！獲得500元滿額折抵購物金！', 
-                link: 'https://lin.ee/你的500元連結' 
+                id: 'cash_88', 
+                weight: 30, 
+                symbol: '🧧', 
+                text: '$88 發發發財金', 
+                desc: '大吉大利！送您 $88 開運金，補貨省一筆！<br><span style="color:#aaa; font-size:0.8rem;">(限下次進貨折抵)</span>', 
+                link: 'https://lin.ee/你的88連結' 
             },
+            
+            // 🔴 四獎
             { 
-                id: 'cash_200', 
+                id: 'cash_66', 
                 weight: 60, 
-                symbol: '🪙', 
-                text: '200元 滿額購物金', 
-                desc: '好運到！獲得200元滿額折抵購物金！', 
-                link: 'https://lin.ee/你的200元連結' 
+                symbol: '🧧', 
+                text: '$66 六六大順金', 
+                desc: '六六大順！送您 $66 順心金，祝您出貨順利！<br><span style="color:#aaa; font-size:0.8rem;">(限下次進貨折抵)</span>', 
+                link: 'https://lin.ee/你的66連結' 
             },
+
+            // 🔴 五獎
             { 
-                id: 'cash_100', 
-                weight: 100, 
-                symbol: '🪙', 
-                text: '100元 滿額購物金', 
-                desc: '暖心好禮！獲得100元滿額折抵購物金！', 
-                link: 'https://lin.ee/你的100元連結' 
+                id: 'gift_supplies', 
+                weight: 100,
+                symbol: '🖊️', 
+                text: '品牌實用小物組', 
+                desc: '感謝支持！隨貨附贈【品牌原子筆/筆記本/膠帶】一組！<br><span style="color:#aaa; font-size:0.8rem;">(開店必備好物，隨貨寄出)</span>', 
+                link: 'https://lin.ee/你的小物連結' 
             }
         ];
 
-        // --- LINE LIFF 初始化 ---
+        // --- 以下程式碼邏輯維持不變 ---
         function initLineLiff() {
             document.getElementById('status-msg').innerText = "正在連接 LINE...";
             liff.init({ liffId: YOUR_LIFF_ID })
@@ -287,19 +331,8 @@
                     userId = profile.userId;
                     userName = profile.displayName;
 
-                    // =========== 🚧 封閉測試鎖定區 (需要時解除註解) 🚧 ===========
-                    /*
-                    const whiteList = [
-                        "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", 
-                        "Uyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
-                    ];
-                    if (!whiteList.includes(userId)) {
-                        alert("🚧 抱歉，本活動目前進行內部測試中 🚧");
-                        liff.closeWindow();
-                        return;
-                    }
-                    */
-                    // ========================================================
+                    // 封閉測試區
+                    /* const whiteList = ["U..."]; if(!whiteList.includes(userId)) return; */
 
                     document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的聖誕拉霸 🎄`;
                     document.getElementById('status-msg').innerText = `Hello, ${userName}！祝你好運！`;
@@ -332,12 +365,7 @@
             const roundText = document.getElementById('round-text');
 
             roundText.innerText = "活動已完成";
-
-            if (prizeName) {
-                statusMsg.innerText = `您已獲得：${prizeName}`;
-            } else {
-                statusMsg.innerText = "已完成領取";
-            }
+            statusMsg.innerText = prizeName ? `您已獲得：${prizeName}` : "已完成領取";
 
             if (prizeLink) {
                 btn.innerText = "🎫 查看我的優惠券";
@@ -388,14 +416,19 @@
         }
 
         function getRandomPrize() {
+            const wonIds = prizeHistory.map(p => p.id);
+            const availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
+            
             let totalWeight = 0;
-            prizes.forEach(p => totalWeight += p.weight);
+            availablePrizes.forEach(p => totalWeight += p.weight);
+            
             let randomNum = Math.random() * totalWeight;
-            for (let i = 0; i < prizes.length; i++) {
-                randomNum -= prizes[i].weight;
-                if (randomNum <= 0) return prizes[i];
+
+            for (let i = 0; i < availablePrizes.length; i++) {
+                randomNum -= availablePrizes[i].weight;
+                if (randomNum <= 0) return availablePrizes[i];
             }
-            return prizes[prizes.length - 1];
+            return availablePrizes[availablePrizes.length - 1];
         }
 
         const reel1 = document.getElementById('reel1');
