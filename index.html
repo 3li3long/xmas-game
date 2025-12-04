@@ -6,7 +6,7 @@
     <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- V24 樣式區：經典聖誕綠 + 黃金邊框 --- */
+        /* --- V25 樣式區：經典聖誕綠 + 黃金邊框 + 放射金光特效 --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -67,6 +67,7 @@
             min-width: 280px;
             text-align: center;
             position: relative;
+            z-index: 10; /* 確保機器在雪花前面 */
         }
 
         /* 機器內部：維持深紅色 */
@@ -128,13 +129,50 @@
             color: #fff !important;
         }
 
+        /* --- 🔥 新增：放射金光背景特效 🔥 --- */
+        .modal-radiance-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            /* 讓光芒非常大，超出螢幕 */
+            width: 200vmax; 
+            height: 200vmax;
+            /* 使用重複的圓錐漸層製作放射光芒 */
+            background: repeating-conic-gradient(
+                from 0deg,
+                rgba(251, 228, 132, 0.4) 0deg 10deg, /* 半透明金色光束 */
+                transparent 10deg 20deg /* 透明間隔 */
+            );
+            /* 居中並放到最底層 */
+            transform: translate(-50%, -50%);
+            z-index: -1; 
+            /* 緩慢旋轉動畫 */
+            animation: rotateRadiance 25s linear infinite;
+            pointer-events: none; /* 避免擋住點擊 */
+            opacity: 0; /* 初始隱藏 */
+            transition: opacity 0.6s ease-out; /* 淡入淡出效果 */
+        }
+        
+        /* 光芒旋轉動畫 */
+        @keyframes rotateRadiance {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to   { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* 當彈窗啟動時，顯示光芒 */
+        .modal-overlay.active .modal-radiance-bg {
+            opacity: 1;
+        }
+
+        /* --- 彈窗樣式調整 --- */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85); /* 背景再深一點，對比光芒 */
             display: none;
             justify-content: center; align-items: center;
             z-index: 1000; backdrop-filter: blur(5px);
             padding: 20px;
+            overflow: hidden; /* 隱藏超出的光芒 */
         }
         .modal-content {
             background: #fff; color: #333;
@@ -143,10 +181,12 @@
             border-radius: 22px;
             text-align: center; position: relative;
             background: linear-gradient(135deg, #fbe484, #d4a00d);
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-            animation: popIn 0.3s ease-out;
+            box-shadow: 0 0 50px rgba(251, 228, 132, 0.5); /* 增加金色外發光 */
+            /* 🔥 更新為更有彈性的動畫 */
+            animation: popInBouncy 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             max-height: 90vh;
             overflow-y: auto;
+            z-index: 2; /* 確保在光芒上面 */
         }
         .modal-inner-content {
             background: #fff;
@@ -154,17 +194,22 @@
             padding: 25px 20px;
         }
 
-        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        /* 🔥 新增：Q彈果凍感出現動畫 */
+        @keyframes popInBouncy { 
+            0% { transform: scale(0.3); opacity: 0; } 
+            70% { transform: scale(1.05); } /* 稍微放大超過一點 */
+            100% { transform: scale(1); opacity: 1; } /* 回到正常大小 */
+        }
         
         .modal-img-placeholder {
             width: 100px; height: 100px;
-            background-color: #fafafa;
+            background-color: #fff9c4; /* 淺金底 */
             margin: 0 auto 15px;
             display: flex; align-items: center; justify-content: center;
             font-size: 3.5rem;
             border-radius: 50%;
             border: 4px solid #fbe484;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(251, 228, 132, 0.4);
         }
         .modal-img-placeholder img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
@@ -202,7 +247,7 @@
         .prize-name { font-weight: 800; color: #333; font-size: 1.1rem; margin-bottom: 4px;}
         .prize-sub { font-size: 0.85rem; color: #777; }
         
-        .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
+        .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
         @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
     </style>
 </head>
@@ -226,7 +271,7 @@
         </div>
     </div>
 
-    <div style="margin-top: 40px; text-align: center; z-index: 999;">
+    <div style="margin-top: 40px; text-align: center; z-index: 999; position: relative;">
         <button onclick="resetGame()" style="background: #e74c3c; color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
             🔄 清除紀錄 (重測用)
         </button>
@@ -234,6 +279,7 @@
     </div>
 
     <div class="modal-overlay" id="resultModal">
+        <div class="modal-radiance-bg"></div> 
         <div class="modal-content">
             <div class="modal-inner-content">
                 <div class="modal-img-placeholder" id="modalImg">🎁</div>
@@ -245,6 +291,7 @@
     </div>
 
     <div class="modal-overlay" id="selectionModal">
+        <div class="modal-radiance-bg"></div>
         <div class="modal-content">
             <div class="modal-inner-content">
                 <div class="modal-title">🎉 恭喜完成！</div>
@@ -267,10 +314,8 @@
         let userName = "";
         let selectedPrizeIndex = -1;
 
-        // --- 🎁 獎項設定 (V24 中性好禮版) ---
-        // 移除「一二三獎」字眼
+        // --- 🎁 獎項設定 (V25 微調版) ---
         const prizes = [
-            // 🔴 獎項 A (洗沐)
             { 
                 id: 'prize_wash', 
                 weight: 10,  
@@ -279,8 +324,6 @@
                 desc: '恭喜獲得質感好禮！<br>REN 或 JMO 洗沐系列依現場庫存擇一贈送！數量有限送完為止！<br><span style="color:#777; font-size:0.9rem;">(價值不菲，犒賞自己首選)</span>', 
                 link: 'https://lin.ee/你的洗沐組連結' 
             },
-            
-            // 🔴 獎項 B (盥洗包+拖鞋)
             { 
                 id: 'prize_set', 
                 weight: 30, 
@@ -289,8 +332,6 @@
                 desc: '恭喜獲得實用好禮！<br>含：旅用盥洗包*2組 + 環保拖鞋*2雙 (顏色尺寸任選)！<br><span style="color:#777; font-size:0.9rem;">(實用組合，馬上就能用)</span>', 
                 link: 'https://lin.ee/你的盥洗包組連結' 
             },
-
-            // 🔴 獎項 C (牙刷組)
             { 
                 id: 'prize_toothbrush', 
                 weight: 60,
@@ -409,12 +450,9 @@
         function getRandomPrize() {
             const wonIds = prizeHistory.map(p => p.id);
             const availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
-            
             let totalWeight = 0;
             availablePrizes.forEach(p => totalWeight += p.weight);
-            
             let randomNum = Math.random() * totalWeight;
-
             for (let i = 0; i < availablePrizes.length; i++) {
                 randomNum -= availablePrizes[i].weight;
                 if (randomNum <= 0) return availablePrizes[i];
@@ -455,15 +493,14 @@
             }, 1000);
         }
 
+        // 🔥 新增：控制光芒動畫的 active class
         function showResultModal(prize) {
             const modal = document.getElementById('resultModal');
             document.getElementById('modalTitle').innerText = prize.text;
             document.getElementById('modalDesc').innerHTML = prize.desc; 
-            
             const imgDiv = document.getElementById('modalImg');
             if (prize.image) imgDiv.innerHTML = `<img src="${prize.image}">`;
             else imgDiv.innerText = prize.symbol;
-
             const btn = document.getElementById('modalBtn');
             if (prizeHistory.length < MAX_ROUNDS) {
                 btn.innerText = `放入背包，轉第 ${prizeHistory.length + 1} 次`;
@@ -473,10 +510,14 @@
                 btn.onclick = showSelectionModal;
             }
             modal.style.display = 'flex';
+            // 延遲一點點加上 active class，讓光芒淡入
+            setTimeout(() => modal.classList.add('active'), 10);
         }
 
         function nextRound() {
-            document.getElementById('resultModal').style.display = 'none';
+            const modal = document.getElementById('resultModal');
+            modal.classList.remove('active'); // 移除光芒
+            modal.style.display = 'none';
             currentRound++;
             updateRoundText();
             const btn = document.getElementById('spinBtn');
@@ -485,6 +526,7 @@
         }
 
         function showSelectionModal() {
+            document.getElementById('resultModal').classList.remove('active');
             document.getElementById('resultModal').style.display = 'none';
             const modal = document.getElementById('selectionModal');
             const list = document.getElementById('finalList');
@@ -504,6 +546,8 @@
                 list.appendChild(item);
             });
             modal.style.display = 'flex';
+            // 延遲一點點加上 active class，讓光芒淡入
+            setTimeout(() => modal.classList.add('active'), 10);
         }
 
         function selectPrize(index, element) {
@@ -537,6 +581,7 @@
             } else {
                 alert("領取成功！(無連結)");
             }
+            document.getElementById('selectionModal').classList.remove('active');
             liff.closeWindow(); 
         }
 
