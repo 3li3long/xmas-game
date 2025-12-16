@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>聖誕好運拉霸機 - 多店通用版</title>
+    <title>聖誕好運拉霸機 - V31修復版</title>
     <style>
         body {
             margin: 0;
@@ -20,7 +20,7 @@
         #game-container {
             position: relative;
             width: 100%;
-            max-width: 450px; /* 手機寬度限制 */
+            max-width: 450px;
             text-align: center;
         }
 
@@ -31,25 +31,19 @@
             max-width: 90%;
         }
 
-        /* 按鈕樣式 */
         #spinBtn {
             display: block;
             margin: 20px auto;
             padding: 15px 40px;
             font-size: 24px;
-            background: linear-gradient(to bottom, #d42426, #a81c1d); /* 聖誕紅 */
+            background: linear-gradient(to bottom, #d42426, #a81c1d);
             color: white;
-            border: 4px solid #f1c40f; /* 金邊 */
+            border: 4px solid #f1c40f;
             border-radius: 50px;
             cursor: pointer;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             font-weight: bold;
-            transition: transform 0.1s;
             user-select: none;
-        }
-
-        #spinBtn:active {
-            transform: scale(0.95);
         }
 
         #spinBtn:disabled {
@@ -58,15 +52,15 @@
             cursor: not-allowed;
         }
 
-        /* --- V30 新增：分店選擇彈窗樣式 --- */
+        /* 分店選擇彈窗樣式 */
         #branchModal {
-            display: none; /* 預設隱藏 */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.85); /* 深色背景 */
+            background-color: rgba(0, 0, 0, 0.85);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -81,7 +75,6 @@
             border-radius: 20px;
             text-align: center;
             border: 5px solid #d42426;
-            animation: popIn 0.3s ease-out;
         }
 
         .modal-title {
@@ -102,22 +95,14 @@
             width: 100%;
             padding: 12px;
             margin: 10px 0;
-            background: #1a2e1a; /* 聖誕綠 */
+            background: #1a2e1a;
             color: white;
             border: none;
             border-radius: 10px;
             font-size: 16px;
             cursor: pointer;
-            text-decoration: none; /* 連結樣式修正 */
-        }
-        
-        .branch-btn:hover {
-            background: #2d4f2d;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            text-decoration: none;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -125,7 +110,6 @@
 
     <div id="game-container">
         <canvas id="slotCanvas" width="350" height="300"></canvas>
-        
         <button id="spinBtn">開始抽獎</button>
     </div>
 
@@ -133,37 +117,33 @@
         <div class="modal-content">
             <h2 class="modal-title">🎉 恭喜中獎！🎉</h2>
             <p class="modal-desc">請選擇您要領取優惠的門市：</p>
-            <div id="branchList">
-                </div>
+            <div id="branchList"></div>
         </div>
     </div>
 
     <script>
         // ==========================================
-        // V30 設定區：請在這裡修改你的分店與連結
+        // 設定區：請務必檢查這裡！
         // ==========================================
         
-        // 分店清單 (格式：名稱, 連結)
+        // 1. 請填入您的分店資訊
         const branches = [
-            { name: "台北信義店", url: "https://line.me/R/ti/p/@store_taipei" },
-            { name: "台中逢甲店", url: "https://line.me/R/ti/p/@store_taichung" },
-            { name: "高雄巨蛋店", url: "https://line.me/R/ti/p/@store_kaohsiung" },
-            // 你可以繼續複製新增...
-            // { name: "台南店", url: "https://..." }, 
+            { name: "台北信義店", url: "https://google.com" }, // 測試用，請換成您的LINE連結
+            { name: "台中逢甲店", url: "https://google.com" },
+            { name: "高雄巨蛋店", url: "https://google.com" }
         ];
 
-        // 圖片設定 (請換成你的圖床連結)
+        // 2. ★★★ 請將這裡換回您原本 V29 能正常顯示的圖片網址 ★★★
         const images = [
-            "https://i.imgur.com/example1.png", // 圖1
-            "https://i.imgur.com/example2.png", // 圖2
-            "https://i.imgur.com/example3.png"  // 圖3
+            "https://via.placeholder.com/150/FF0000/FFFFFF?text=A", // 預設紅圖
+            "https://via.placeholder.com/150/00FF00/FFFFFF?text=B", // 預設綠圖
+            "https://via.placeholder.com/150/0000FF/FFFFFF?text=C"  // 預設藍圖
         ];
         
-        // 機率設定 (0-1之間)
-        const winRate = 0.5; 
+        const winRate = 0.5; // 中獎機率
 
         // ==========================================
-        // 程式邏輯開始 (以下通常不需要修改)
+        // 核心程式碼 (已修復兼容性問題)
         // ==========================================
 
         const canvas = document.getElementById('slotCanvas');
@@ -173,103 +153,118 @@
         const branchListDiv = document.getElementById('branchList');
 
         let isSpinning = false;
-        let offset = 0;
-        let speed = 0;
-        let resultIndex = 0; // 0, 1, 2 對應上面 images 的順序
-        let finalState = 'stopped'; // stopped, stopping, spin
-
-        // 載入圖片
+        let finalState = 'stopped'; 
+        let resultIndex = 0; 
+        
+        // 圖片載入管理
         const imgObjs = [];
         let imgsLoaded = 0;
-        
-        // 預設載入中文字
+        let imgsTotal = images.length;
+
+        // 顯示載入中
         ctx.font = "20px Arial";
         ctx.fillStyle = "#333";
-        ctx.fillText("Loading...", 130, 150);
+        ctx.textAlign = "center";
+        ctx.fillText("Loading...", canvas.width/2, canvas.height/2);
 
+        // 載入圖片 (加入錯誤處理，防止卡住)
         images.forEach((src, index) => {
             const img = new Image();
             img.src = src;
-            img.onload = () => {
+            
+            const onLoadOrError = () => {
                 imgsLoaded++;
-                if (imgsLoaded === images.length) {
-                    drawStatic(); // 圖片載入完成後畫初始畫面
+                if (imgsLoaded === imgsTotal) {
+                    drawStatic();
                 }
             };
+
+            img.onload = onLoadOrError;
+            img.onerror = () => {
+                console.warn("圖片載入失敗，將使用色塊代替:", src);
+                onLoadOrError(); // 就算失敗也繼續，不要卡死
+            };
+            
             imgObjs.push(img);
         });
 
-        // 繪製靜態畫面
         function drawStatic() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // 畫三格框框
-            drawSlots(0); 
+            drawSlots(); 
         }
 
-        // 核心繪圖函式
-        function drawSlots(currentOffset) {
-            const slotWidth = 100;
-            const slotHeight = 100;
+        function drawSlots() {
+            const slotWidth = 90;
+            const slotHeight = 90;
             const gap = 15;
-            const startX = (canvas.width - (slotWidth * 3 + gap * 2)) / 2;
+            const totalWidth = (slotWidth * 3) + (gap * 2);
+            const startX = (canvas.width - totalWidth) / 2;
             const startY = (canvas.height - slotHeight) / 2;
 
-            // 畫背景框
+            // 畫背景
             ctx.fillStyle = "#f0f0f0";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 畫三個視窗
             for (let i = 0; i < 3; i++) {
                 let x = startX + i * (slotWidth + gap);
                 
-                // 每個框框的背景
+                // 畫外框 (改回傳統 rect 以防相容性問題)
                 ctx.fillStyle = "#fff";
-                ctx.strokeStyle = "#d42426"; // 紅框
+                ctx.strokeStyle = "#d42426";
                 ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.roundRect(x, startY, slotWidth, slotHeight, 10);
-                ctx.fill();
-                ctx.stroke();
+                ctx.fillRect(x, startY, slotWidth, slotHeight);
+                ctx.strokeRect(x, startY, slotWidth, slotHeight);
 
-                // 決定要畫哪張圖
-                // 這裡做一個簡單的滾動效果模擬
-                // 實際上這部分可以寫得很複雜，這裡用簡單的位移模擬
+                // 決定要顯示的圖
                 let imgIndex;
                 if (isSpinning) {
-                    // 轉動時隨機閃爍或位移
                     imgIndex = Math.floor(Math.random() * images.length);
                 } else {
-                    // 停止時
                     if (finalState === 'stopped') {
-                         // 簡單邏輯：如果是贏的，大家都顯示 resultIndex
-                         // 如果是輸的，讓他們不一樣 (這裡簡化，直接顯示設定好的結果)
-                         // 為了方便控制，我們讓 draw() 外部決定 result
-                         imgIndex = resultIndex; // 這裡簡化處理，實際動畫會更複雜
+                        // 停止狀態：如果是中獎，大家都顯示 resultIndex
+                        // 如果沒中獎，顯示 0, 1, 2 (不一樣的圖)
+                        if (resultIndex === 0) { // 假設 0 是中獎的邏輯
+                             imgIndex = 0; 
+                        } else {
+                             // 沒中獎顯示不同圖 (簡易邏輯)
+                             imgIndex = (i + 1) % images.length; 
+                        }
+                        
+                        // 修正：如果中獎機率 logic 判定是贏，強迫三個一樣
+                        // 這裡簡化：我們用外部的 check 來決定最終畫面
+                        // 為了動畫簡單，我們這裡直接用隨機，最後一幀修正
                     } else {
                          imgIndex = Math.floor(Math.random() * images.length);
                     }
                 }
-                
-                // 為了讓動畫看起來像在跑，我們在 spinning 狀態下一直換圖
-                // 這裡採用最簡易的「結果呈現法」，真正的拉霸動畫需要 requestAnimationFrame 的長時間計算
-                
-                if (imgObjs[imgIndex]) {
-                    ctx.drawImage(imgObjs[imgIndex], x + 10, startY + 10, 80, 80);
+
+                // 繪製圖片 (若圖片載入失敗則不畫，避免報錯)
+                // 修正邏輯：停止時顯示正確結果
+                if (finalState === 'stopped' && !isSpinning) {
+                     // 這裡讓結果固定
+                     if (resultIndex === 0) { // Win
+                        imgIndex = 0; 
+                     } else { // Lose
+                        imgIndex = (i) % images.length;
+                     }
+                }
+
+                if (imgObjs[imgIndex] && imgObjs[imgIndex].complete && imgObjs[imgIndex].naturalWidth !== 0) {
+                    ctx.drawImage(imgObjs[imgIndex], x + 5, startY + 5, slotWidth - 10, slotHeight - 10);
+                } else {
+                    // 圖片沒載入時顯示文字
+                    ctx.fillStyle = "#333";
+                    ctx.fillText("?", x + slotWidth/2, startY + slotHeight/2 + 5);
                 }
             }
         }
 
-        // 動畫循環
         function animate() {
             if (!isSpinning && finalState === 'stopped') return;
-
-            // 簡單的視覺切換
-            drawSlots(offset);
-            
+            drawSlots();
             requestAnimationFrame(animate);
         }
         
-        // 點擊開始
         btn.addEventListener('click', () => {
             if (isSpinning) return;
             startSpin();
@@ -280,74 +275,51 @@
             finalState = 'spin';
             btn.disabled = true;
             btn.textContent = "好運運轉中...";
-            
-            // 開始動畫循環
             animate();
 
-            // 模擬網路請求或計算結果 (2秒後停)
             setTimeout(() => {
                 stopSpin();
             }, 2000);
         }
 
         function stopSpin() {
-            // 決定輸贏
             const isWin = Math.random() < winRate;
             
-            if (isWin) {
-                // 贏了：三個圖案一樣 (預設用第一張圖)
-                resultIndex = 0; 
-                // 你也可以隨機選一張圖作為中獎圖: Math.floor(Math.random() * 3)
-            } else {
-                // 輸了：邏輯上我們這裡只做中獎演示，
-                // 如果要顯示輸，可以設定 resultIndex 為 -1 並在 draw 裡處理，
-                // 或是讓三個格子顯示不同圖片。
-                // 這裡為了演示方便，假設沒中獎就跳出「沒中」提示
-                // 但根據你的需求，通常是想測試中獎連結，所以我把輸的情況也讓它「視覺上」看起來不同即可
-                resultIndex = 1; // 暫時邏輯
-            }
+            // 0 代表中獎(三張圖一樣)，1 代表沒中
+            resultIndex = isWin ? 0 : 1;
 
             finalState = 'stopped';
             isSpinning = false;
-            drawStatic(); // 畫出最後結果
             
-            // 恢復按鈕
+            // 強制重畫最後一幀以顯示結果
+            drawStatic(); 
+            
             btn.disabled = false;
             btn.textContent = "再次挑戰";
 
-            // 處理結果
             if (isWin) {
                 setTimeout(() => {
-                   showBranchSelector(); // <--- 關鍵修改：呼叫分店選擇器
+                   showBranchSelector(); 
                 }, 500);
             } else {
                 setTimeout(() => {
-                    alert("哎呀！差一點點，再試一次！");
+                    alert("哎呀！沒中獎，再試一次！");
                 }, 500);
             }
         }
 
-        // --- V30 新增：顯示分店選擇彈窗 ---
         function showBranchSelector() {
-            // 1. 清空舊內容
             branchListDiv.innerHTML = '';
-
-            // 2. 根據設定檔建立按鈕
             branches.forEach(branch => {
                 const button = document.createElement('a');
                 button.className = 'branch-btn';
-                button.textContent = branch.name; // 按鈕文字
-                button.href = branch.url;         // 連結
-                // button.target = "_blank";      // 如果想要開新視窗可加這行，但在 LINE 裡通常不需要
-                
+                button.textContent = branch.name;
+                button.href = branch.url;
                 branchListDiv.appendChild(button);
             });
-
-            // 3. 顯示彈窗
             modal.style.display = 'flex';
         }
 
-        // 點擊彈窗背景可以關閉 (選擇性功能)
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
                 modal.style.display = 'none';
