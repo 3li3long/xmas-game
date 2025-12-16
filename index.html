@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聖誕拉霸活動 - 花蓮實測版</title>
+    <title>聖誕拉霸活動 - 花蓮修正版</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         /* --- 樣式區 (維持不變) --- */
@@ -304,7 +304,7 @@
                 id: 'hualien', 
                 name: "花蓮營業處", 
                 urls: {
-                    // ✅ 已幫您填入花蓮專屬連結
+                    // ✅ 花蓮專屬連結
                     prize_wash: "https://lin.ee/Qab44th", 
                     prize_set: "https://lin.ee/bk3JGtx",
                     prize_toothbrush: "https://lin.ee/EttCa9W"
@@ -321,7 +321,7 @@
             }
         ];
 
-        // 獎項基本資料 (這裡的 link 會被動態替換，不需要改)
+        // 獎項基本資料
         let prizes = [
             { 
                 id: 'prize_wash', 
@@ -376,6 +376,8 @@
                 .catch((err) => {
                     console.error('LIFF Error:', err);
                     document.getElementById('status-msg').innerHTML = "測試模式 (未連接 LINE)";
+                    // 修正：如果是測試模式且選了分店，也要啟用按鈕
+                    if (selectedBranch) enableGame();
                 });
         }
 
@@ -416,17 +418,19 @@
             if (selectedBranch) {
                 document.getElementById('branch-display').innerText = `✨ 分店：${selectedBranch.name} ✨`;
                 
-                // 🔥 核心邏輯修正：根據分店設定，把正確的連結塞進獎品裡
+                // 填入分店專屬連結
                 prizes.forEach(prize => {
-                    // 取出該分店對應這個獎品ID的網址
                     const specificLink = selectedBranch.urls[prize.id];
                     if (specificLink) {
                         prize.link = specificLink;
                     }
                 });
 
+                // 🔥【修復點】🔥 
+                // 如果用戶資料已經抓到了 (userId存在) 或者 在測試模式
+                // 選擇分店後，要馬上啟用按鈕！
                 if (userId || !liff.isInClient()) {
-                    // 如果用戶資料還沒讀到，先不 enable
+                    enableGame();
                 }
             }
         }
@@ -453,9 +457,11 @@
                         currentRound = prizeHistory.length;
                     }
 
+                    // 如果已經選過分店，這裡也會啟用
                     if (selectedBranch) enableGame();
                 })
                 .catch(err => {
+                    // 測試或錯誤時的 fallback
                     if (selectedBranch) enableGame();
                 });
         }
@@ -463,6 +469,7 @@
         function enableGame() {
             const btn = document.getElementById('spinBtn');
             btn.disabled = false;
+            // 這裡會把按鈕文字從「請先選擇分店」改成「開始第 X 次」
             if (currentRound >= MAX_ROUNDS) {
                 btn.innerText = "查看獎品 (3選1)";
                 btn.onclick = showSelectionModal; 
@@ -541,7 +548,6 @@
             }, 100);
 
             let result = getRandomPrize();
-            // 此時 result.link 已經被 applyBranchSettings 替換成該分店的專屬網址了
             prizeHistory.push(result);
 
             if (userId) {
