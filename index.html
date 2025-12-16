@@ -12,183 +12,41 @@
             font-family: 'Arial', sans-serif;
             background: radial-gradient(circle at center, #2e7d32 0%, #0d2b18 100%);
             color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            width: 100vw;
-            margin: 0;
-            padding: 10px;
-            overflow-x: hidden;
-            overflow-y: auto;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; width: 100vw; margin: 0; padding: 10px;
+            overflow-x: hidden; overflow-y: auto;
         }
-        h1 {
-            color: #f8d85c;
-            text-shadow: 2px 2px 4px #000;
-            margin-bottom: 5px;
-            font-size: clamp(1.5rem, 5vw, 2rem);
-            text-align: center;
-            font-weight: 800;
-        }
-        .subtitle {
-            color: #fff;
-            font-size: 1rem;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            background: rgba(255,255,255,0.15);
-            padding: 5px 20px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
+        h1 { color: #f8d85c; text-shadow: 2px 2px 4px #000; margin-bottom: 5px; font-size: clamp(1.5rem, 5vw, 2rem); text-align: center; font-weight: 800; }
+        .subtitle { color: #fff; font-size: 1rem; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); background: rgba(255,255,255,0.15); padding: 5px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
         .info-text { font-size: 0.9rem; color: #ddd; margin-bottom: 10px; text-align: center;}
-        
-        .round-indicator {
-            background: rgba(0,0,0,0.4);
-            padding: 5px 15px;
-            border-radius: 20px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            color: #f8d85c;
-            border: 1px solid rgba(248, 216, 92, 0.3);
-        }
-
-        .machine-container {
-            background: linear-gradient(to bottom, #fbe484, #d4a00d, #9e7606, #d4a00d, #fbe484);
-            padding: 8px; 
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(248, 216, 92, 0.4) inset;
-            width: 95%;
-            max-width: 350px;
-            min-width: 280px;
-            text-align: center;
-            position: relative;
-            z-index: 10;
-        }
-
-        .machine-inner {
-            background: linear-gradient(160deg, #c0392b, #912317);
-            border-radius: 18px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.4);
-        }
-
-        .slots-window {
-            background-color: #fff;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 5px;
-            border: 3px solid #e0e0e0;
-            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
-            width: 100%;
-        }
-        .reel {
-            font-size: clamp(2.5rem, 10vw, 3.5rem);
-            width: 33%;
-            height: 70px;
-            line-height: 75px;
-            text-align: center;
-            border-right: 2px solid #ddd;
-            color: #333;
-            display: flex; align-items: center; justify-content: center;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        }
+        .round-indicator { background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; margin-bottom: 10px; font-size: 0.9rem; color: #f8d85c; border: 1px solid rgba(248, 216, 92, 0.3); }
+        .machine-container { background: linear-gradient(to bottom, #fbe484, #d4a00d, #9e7606, #d4a00d, #fbe484); padding: 8px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(248, 216, 92, 0.4) inset; width: 95%; max-width: 350px; min-width: 280px; text-align: center; position: relative; z-index: 10; }
+        .machine-inner { background: linear-gradient(160deg, #c0392b, #912317); border-radius: 18px; padding: 15px; display: flex; flex-direction: column; gap: 15px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.4); }
+        .slots-window { background-color: #fff; border-radius: 10px; display: flex; justify-content: space-around; align-items: center; padding: 10px 5px; border: 3px solid #e0e0e0; box-shadow: inset 0 5px 15px rgba(0,0,0,0.3); width: 100%; }
+        .reel { font-size: clamp(2.5rem, 10vw, 3.5rem); width: 33%; height: 70px; line-height: 75px; text-align: center; border-right: 2px solid #ddd; color: #333; display: flex; align-items: center; justify-content: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
         .reel:last-child { border-right: none; }
-        
-        .spin-btn {
-            background: linear-gradient(to bottom, #fbe484, #d4a00d);
-            border: none;
-            padding: 15px 0;
-            width: 100%;
-            font-size: 1.5rem;
-            color: #5c3a00;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 6px 0 #9e7606, 0 2px 10px rgba(248, 216, 92, 0.4);
-            text-shadow: 0 1px 1px rgba(255,255,255,0.5);
-            transition: all 0.1s;
-        }
+        .spin-btn { background: linear-gradient(to bottom, #fbe484, #d4a00d); border: none; padding: 15px 0; width: 100%; font-size: 1.5rem; color: #5c3a00; font-weight: bold; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #9e7606, 0 2px 10px rgba(248, 216, 92, 0.4); text-shadow: 0 1px 1px rgba(255,255,255,0.5); transition: all 0.1s; }
         .spin-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #9e7606; }
         .spin-btn:disabled { background: #95a5a6; color: #555; cursor: not-allowed; box-shadow: none; transform: translateY(5px); text-shadow: none;}
+        .btn-claimed { background: linear-gradient(to bottom, #2ecc71, #27ae60) !important; box-shadow: 0 6px 0 #1e8449 !important; color: #fff !important; }
         
-        .btn-claimed {
-            background: linear-gradient(to bottom, #2ecc71, #27ae60) !important;
-            box-shadow: 0 6px 0 #1e8449 !important;
-            color: #fff !important;
-        }
-
-        /* --- 彈窗樣式 --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: none;
-            justify-content: center; align-items: center;
-            z-index: 1000; 
-            padding: 20px;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #fbe484, #d4a00d);
-            width: 100%; max-width: 340px;
-            padding: 5px;
-            border-radius: 22px;
-            text-align: center; position: relative;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            animation: popInBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-inner-content {
-            background: #fff;
-            border-radius: 18px;
-            padding: 25px 20px;
-            color: #333;
-        }
-
-        @keyframes popInBouncy { 
-            0% { transform: scale(0.3); opacity: 0; } 
-            70% { transform: scale(1.05); } 
-            100% { transform: scale(1); opacity: 1; } 
-        }
-
+        /* 彈窗樣式 */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: linear-gradient(135deg, #fbe484, #d4a00d); width: 100%; max-width: 340px; padding: 5px; border-radius: 22px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: popInBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); max-height: 90vh; overflow-y: auto; }
+        .modal-inner-content { background: #fff; border-radius: 18px; padding: 25px 20px; color: #333; }
+        @keyframes popInBouncy { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
         .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: 800; }
         .modal-desc { font-size: 0.95rem; color: #555; margin-bottom: 25px; line-height: 1.6; background: #f9f9f9; padding: 10px; border-radius: 10px;}
         .action-btn { background: linear-gradient(to bottom, #2ecc71, #27ae60); color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; box-shadow: 0 4px 0 #1e8449; font-weight: bold;}
-        
         .prize-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; text-align: left;}
-        .prize-item {
-            background: #fff; border: 2px solid #eee; border-radius: 15px; padding: 12px;
-            display: flex; align-items: center; text-align: left; cursor: pointer;
-        }
+        .prize-item { background: #fff; border: 2px solid #eee; border-radius: 15px; padding: 12px; display: flex; align-items: center; text-align: left; cursor: pointer; }
         .prize-item.selected { border-color: #c0392b; background: #ffebee; border-width: 3px;}
         .prize-icon { font-size: 2.2rem; margin-right: 15px; width: 50px; text-align: center;}
         .prize-info { flex: 1; }
         .prize-name { font-weight: 800; color: #333; }
-
+        
         /* 分店選擇按鈕 */
-        .branch-btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: #fff;
-            color: #333;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-            position: relative;
-        }
+        .branch-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background: #fff; color: #333; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; }
         .branch-btn:hover { border-color: #d4a00d; background-color: #fffdf0; }
         .branch-btn:after { content: '👉'; position: absolute; right: 15px; }
 
@@ -220,7 +78,7 @@
         <button onclick="resetGame()" style="background: #e74c3c; color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
             🔄 清除紀錄 (測試用)
         </button>
-        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(如果卡住請按此清除)</p>
+        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(清除後可重新體驗流程)</p>
     </div>
 
     <div class="modal-overlay" id="resultModal">
@@ -304,7 +162,7 @@
                 id: 'hualien', 
                 name: "花蓮營業處", 
                 urls: {
-                    // ✅ 花蓮連結 (確認正確)
+                    // ✅ 花蓮連結
                     prize_wash: "https://lin.ee/Qab44th", 
                     prize_set: "https://lin.ee/bk3JGtx",
                     prize_toothbrush: "https://lin.ee/EttCa9W"
@@ -369,7 +227,7 @@
                 .catch((err) => {
                     console.error('LIFF Error:', err);
                     document.getElementById('status-msg').innerHTML = "測試模式 (未連接 LINE)";
-                    enableGame(); // 測試模式直接開始
+                    enableGame(); 
                 });
         }
 
@@ -384,7 +242,6 @@
                     const wonPrizeName = localStorage.getItem('xmas_won_prize_' + userId);
                     const wonPrizeLink = localStorage.getItem('xmas_won_link_' + userId);
 
-                    // 如果已經領過獎，直接鎖定
                     if (localStorage.getItem('xmas_claimed_' + userId)) {
                         lockGameAsFinished(wonPrizeName, wonPrizeLink);
                         return;
@@ -396,11 +253,10 @@
                         currentRound = prizeHistory.length;
                     }
 
-                    // 無條件啟用遊戲 (只要沒領過獎)
                     enableGame();
                 })
                 .catch(err => {
-                    enableGame(); // 錯誤時的 fallback
+                    enableGame();
                 });
         }
 
@@ -456,16 +312,25 @@
             }
         }
 
+        // 🔥🔥🔥 修正：防重複邏輯 (一定要抽到不同的) 🔥🔥🔥
         function getRandomPrize() {
-            // 這裡不需要過濾，單純機率抽取，因為選獎品是在最後
+            // 找出已經抽過的 ID
+            const wonIds = prizeHistory.map(p => p.id);
+            // 濾出還沒抽過的獎品
+            let availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
+
+            // 防呆：如果萬一全抽過了，就從全部抽 (避免卡死)
+            if (availablePrizes.length === 0) availablePrizes = prizes;
+
             let totalWeight = 0;
-            prizes.forEach(p => totalWeight += p.weight);
+            availablePrizes.forEach(p => totalWeight += p.weight);
             let randomNum = Math.random() * totalWeight;
-            for (let i = 0; i < prizes.length; i++) {
-                randomNum -= prizes[i].weight;
-                if (randomNum <= 0) return prizes[i];
+
+            for (let i = 0; i < availablePrizes.length; i++) {
+                randomNum -= availablePrizes[i].weight;
+                if (randomNum <= 0) return availablePrizes[i];
             }
-            return prizes[prizes.length - 1];
+            return availablePrizes[availablePrizes.length - 1];
         }
 
         const reel1 = document.getElementById('reel1');
@@ -556,15 +421,12 @@
             btn.style.background = "#2ecc71";
         }
 
-        // 🔥 新邏輯：先選獎品 -> 再跳分店選單
         function showBranchModal() {
             if (selectedPrizeIndex === -1) return;
             const prizeName = prizeHistory[selectedPrizeIndex].text;
             
-            // 隱藏選獎品視窗
             document.getElementById('selectionModal').style.display = 'none';
             
-            // 準備分店視窗
             document.getElementById('selectedPrizeName').innerText = prizeName;
             const modal = document.getElementById('branchModal');
             const list = document.getElementById('branchList');
@@ -574,7 +436,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'branch-btn';
                 btn.textContent = branch.name;
-                // 點分店後 -> 觸發最終領取
+                // 🔥🔥🔥 修正：這裡加上了完整的 onclick 事件 🔥🔥🔥
                 btn.onclick = () => finalizeClaim(branch);
                 list.appendChild(btn);
             });
@@ -582,7 +444,7 @@
             modal.style.display = 'flex';
         }
 
-        // 🔥 最終領取：組合 分店 + 獎品 -> 導向網址
+        // 🔥🔥🔥 修正：確保跳轉邏輯正確 🔥🔥🔥
         function finalizeClaim(branch) {
             const finalPrize = prizeHistory[selectedPrizeIndex];
             
@@ -603,7 +465,7 @@
             } else {
                 alert("此分店暫無此獎品連結，請聯繫管理員");
             }
-            liff.closeWindow(); 
+            // liff.closeWindow(); // 暫時註解掉，避免還沒跳轉就關閉
         }
 
         window.onload = function() {
