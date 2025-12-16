@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>聖誕拉霸活動 - 花蓮修正版</title>
+    <title>聖誕拉霸活動</title>
     <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- 樣式區 (維持不變) --- */
+        /* --- 樣式區 --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -142,7 +142,7 @@
             text-align: center; position: relative;
             box-shadow: 0 10px 40px rgba(0,0,0,0.5);
             animation: popInBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            max-height: 90vh; /* 避免超出螢幕 */
+            max-height: 90vh;
             overflow-y: auto;
         }
         .modal-inner-content {
@@ -200,7 +200,7 @@
     <div class="snow"></div>
     
     <h1 id="welcome-msg">🎄 聖誕好禮拉霸 🎄</h1>
-    <div class="subtitle" id="branch-display">✨ 請先選擇分店 ✨</div>
+    <div class="subtitle">✨ 消費滿千即可參加 ✨</div>
     
     <div class="info-text" id="status-msg">連線中...</div>
     <div class="round-indicator" id="round-text">準備開始 (0/3)</div>
@@ -212,7 +212,7 @@
                 <div class="reel" id="reel2">🎅</div>
                 <div class="reel" id="reel3">🎅</div>
             </div>
-            <button class="spin-btn" id="spinBtn" onclick="playGame()" disabled>請先選擇分店</button>
+            <button class="spin-btn" id="spinBtn" onclick="playGame()" disabled>載入中...</button>
         </div>
     </div>
 
@@ -220,17 +220,7 @@
         <button onclick="resetGame()" style="background: #e74c3c; color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
             🔄 清除紀錄 (測試用)
         </button>
-        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(測試切換分店用)</p>
-    </div>
-
-    <div class="modal-overlay" id="branchModal">
-        <div class="modal-content">
-            <div class="modal-inner-content">
-                <div class="modal-title">📍 請選擇服務門市</div>
-                <div class="modal-desc">請選擇您所在的門市，<br>以領取專屬優惠：</div>
-                <div id="branchList"></div>
-            </div>
-        </div>
+        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(如果卡住請按此清除)</p>
     </div>
 
     <div class="modal-overlay" id="resultModal">
@@ -250,7 +240,17 @@
                 <div class="modal-title">🎉 恭喜完成！</div>
                 <div class="modal-desc" style="text-align: center;">您有 3 次中獎紀錄，請 **擇一** 領取：<br>(點選後將無法更改)</div>
                 <div class="prize-list" id="finalList"></div>
-                <button class="action-btn" onclick="confirmSelection()" disabled id="confirmBtn">請先選擇一個獎品</button>
+                <button class="action-btn" onclick="showBranchModal()" disabled id="confirmBtn">請先選擇一個獎品</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="branchModal">
+        <div class="modal-content">
+            <div class="modal-inner-content">
+                <div class="modal-title">📍 請選擇領取分店</div>
+                <div class="modal-desc">您選擇了 <b id="selectedPrizeName" style="color:#d42426"></b><br>請問您要去哪裡領取？</div>
+                <div id="branchList"></div>
             </div>
         </div>
     </div>
@@ -260,7 +260,7 @@
         const YOUR_LIFF_ID = "2008607102-ZKoAeEga"; 
 
         // ==========================================
-        // 🔥 設定區：花蓮連結已更新 🔥
+        // 🔥 設定區：連結資料庫 🔥
         // ==========================================
         
         const branches = [
@@ -304,7 +304,7 @@
                 id: 'hualien', 
                 name: "花蓮營業處", 
                 urls: {
-                    // ✅ 花蓮專屬連結
+                    // ✅ 花蓮連結 (確認正確)
                     prize_wash: "https://lin.ee/Qab44th", 
                     prize_set: "https://lin.ee/bk3JGtx",
                     prize_toothbrush: "https://lin.ee/EttCa9W"
@@ -321,31 +321,27 @@
             }
         ];
 
-        // 獎項基本資料
         let prizes = [
             { 
                 id: 'prize_wash', 
                 weight: 10,  
                 symbol: '🧴', 
                 text: '進口星級洗沐四件組', 
-                desc: '質感好禮！REN 或 JMO 洗沐系列依現場庫存擇一贈送！', 
-                link: '' // 程式會自動填
+                desc: '質感好禮！REN 或 JMO 洗沐系列依現場庫存擇一贈送！'
             },
             { 
                 id: 'prize_set', 
                 weight: 30, 
                 symbol: '👝', 
                 text: '旅用盥洗包*2+拖鞋*2雙', 
-                desc: '實用好禮！含旅用盥洗包*2組 + 環保拖鞋*2雙！', 
-                link: '' 
+                desc: '實用好禮！含旅用盥洗包*2組 + 環保拖鞋*2雙！'
             },
             { 
                 id: 'prize_toothbrush', 
                 weight: 60,
                 symbol: '🧳', 
                 text: '旅用牙刷牙膏組(*3)', 
-                desc: '貼心好禮！一次帶走「旅用牙刷牙膏組 * 3組」！', 
-                link: '' 
+                desc: '貼心好禮！一次帶走「旅用牙刷牙膏組 * 3組」！'
             }
         ];
 
@@ -359,12 +355,9 @@
         let userId = "";
         let userName = "";
         let selectedPrizeIndex = -1;
-        let selectedBranch = null; 
 
         function initLineLiff() {
             document.getElementById('status-msg').innerText = "正在連接 LINE...";
-            checkBranchSelection(); // 先檢查分店
-
             liff.init({ liffId: YOUR_LIFF_ID })
                 .then(() => {
                     if (!liff.isLoggedIn()) {
@@ -376,63 +369,8 @@
                 .catch((err) => {
                     console.error('LIFF Error:', err);
                     document.getElementById('status-msg').innerHTML = "測試模式 (未連接 LINE)";
-                    // 修正：如果是測試模式且選了分店，也要啟用按鈕
-                    if (selectedBranch) enableGame();
+                    enableGame(); // 測試模式直接開始
                 });
-        }
-
-        function checkBranchSelection() {
-            const storedBranchId = localStorage.getItem('xmas_branch_id_v2'); 
-            if (storedBranchId) {
-                applyBranchSettings(storedBranchId);
-            } else {
-                showBranchModal();
-            }
-        }
-
-        function showBranchModal() {
-            const modal = document.getElementById('branchModal');
-            const list = document.getElementById('branchList');
-            list.innerHTML = '';
-
-            branches.forEach(branch => {
-                const btn = document.createElement('button');
-                btn.className = 'branch-btn';
-                btn.textContent = branch.name;
-                btn.onclick = () => selectBranch(branch.id);
-                list.appendChild(btn);
-            });
-
-            modal.style.display = 'flex';
-        }
-
-        function selectBranch(branchId) {
-            localStorage.setItem('xmas_branch_id_v2', branchId);
-            applyBranchSettings(branchId);
-            document.getElementById('branchModal').style.display = 'none';
-        }
-
-        function applyBranchSettings(branchId) {
-            selectedBranch = branches.find(b => b.id === branchId);
-            
-            if (selectedBranch) {
-                document.getElementById('branch-display').innerText = `✨ 分店：${selectedBranch.name} ✨`;
-                
-                // 填入分店專屬連結
-                prizes.forEach(prize => {
-                    const specificLink = selectedBranch.urls[prize.id];
-                    if (specificLink) {
-                        prize.link = specificLink;
-                    }
-                });
-
-                // 🔥【修復點】🔥 
-                // 如果用戶資料已經抓到了 (userId存在) 或者 在測試模式
-                // 選擇分店後，要馬上啟用按鈕！
-                if (userId || !liff.isInClient()) {
-                    enableGame();
-                }
-            }
         }
 
         function getProfile() {
@@ -446,6 +384,7 @@
                     const wonPrizeName = localStorage.getItem('xmas_won_prize_' + userId);
                     const wonPrizeLink = localStorage.getItem('xmas_won_link_' + userId);
 
+                    // 如果已經領過獎，直接鎖定
                     if (localStorage.getItem('xmas_claimed_' + userId)) {
                         lockGameAsFinished(wonPrizeName, wonPrizeLink);
                         return;
@@ -457,19 +396,18 @@
                         currentRound = prizeHistory.length;
                     }
 
-                    // 如果已經選過分店，這裡也會啟用
-                    if (selectedBranch) enableGame();
+                    // 無條件啟用遊戲 (只要沒領過獎)
+                    enableGame();
                 })
                 .catch(err => {
-                    // 測試或錯誤時的 fallback
-                    if (selectedBranch) enableGame();
+                    enableGame(); // 錯誤時的 fallback
                 });
         }
 
         function enableGame() {
             const btn = document.getElementById('spinBtn');
             btn.disabled = false;
-            // 這裡會把按鈕文字從「請先選擇分店」改成「開始第 X 次」
+            
             if (currentRound >= MAX_ROUNDS) {
                 btn.innerText = "查看獎品 (3選1)";
                 btn.onclick = showSelectionModal; 
@@ -511,7 +449,7 @@
         }
 
         function resetGame() {
-            if(confirm("確定要清除所有紀錄 (包含分店) 並重來嗎？")) {
+            if(confirm("確定要清除所有紀錄並重來嗎？")) {
                 localStorage.clear(); 
                 alert("紀錄已清除！");
                 window.location.reload(); 
@@ -519,16 +457,15 @@
         }
 
         function getRandomPrize() {
-            const wonIds = prizeHistory.map(p => p.id);
-            const availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
+            // 這裡不需要過濾，單純機率抽取，因為選獎品是在最後
             let totalWeight = 0;
-            availablePrizes.forEach(p => totalWeight += p.weight);
+            prizes.forEach(p => totalWeight += p.weight);
             let randomNum = Math.random() * totalWeight;
-            for (let i = 0; i < availablePrizes.length; i++) {
-                randomNum -= availablePrizes[i].weight;
-                if (randomNum <= 0) return availablePrizes[i];
+            for (let i = 0; i < prizes.length; i++) {
+                randomNum -= prizes[i].weight;
+                if (randomNum <= 0) return prizes[i];
             }
-            return availablePrizes[availablePrizes.length - 1];
+            return prizes[prizes.length - 1];
         }
 
         const reel1 = document.getElementById('reel1');
@@ -615,26 +552,56 @@
             selectedPrizeIndex = index;
             const btn = document.getElementById('confirmBtn');
             btn.disabled = false;
-            btn.innerText = "確認領取：" + prizeHistory[index].text;
+            btn.innerText = "下一步：選擇領取分店";
             btn.style.background = "#2ecc71";
         }
 
-        function confirmSelection() {
+        // 🔥 新邏輯：先選獎品 -> 再跳分店選單
+        function showBranchModal() {
             if (selectedPrizeIndex === -1) return;
+            const prizeName = prizeHistory[selectedPrizeIndex].text;
+            
+            // 隱藏選獎品視窗
+            document.getElementById('selectionModal').style.display = 'none';
+            
+            // 準備分店視窗
+            document.getElementById('selectedPrizeName').innerText = prizeName;
+            const modal = document.getElementById('branchModal');
+            const list = document.getElementById('branchList');
+            list.innerHTML = '';
+
+            branches.forEach(branch => {
+                const btn = document.createElement('button');
+                btn.className = 'branch-btn';
+                btn.textContent = branch.name;
+                // 點分店後 -> 觸發最終領取
+                btn.onclick = () => finalizeClaim(branch);
+                list.appendChild(btn);
+            });
+
+            modal.style.display = 'flex';
+        }
+
+        // 🔥 最終領取：組合 分店 + 獎品 -> 導向網址
+        function finalizeClaim(branch) {
             const finalPrize = prizeHistory[selectedPrizeIndex];
             
+            // 從分店資料中，找出該獎品對應的連結
+            const targetLink = branch.urls[finalPrize.id];
+
             if (userId) {
                 localStorage.setItem('xmas_claimed_' + userId, 'true');
                 localStorage.setItem('xmas_won_prize_' + userId, finalPrize.text);
-                if(finalPrize.link) {
-                    localStorage.setItem('xmas_won_link_' + userId, finalPrize.link);
+                localStorage.setItem('xmas_branch_' + userId, branch.name);
+                if(targetLink) {
+                    localStorage.setItem('xmas_won_link_' + userId, targetLink);
                 }
             }
 
-            if (finalPrize.link) {
-                window.location.href = finalPrize.link;
+            if (targetLink) {
+                window.location.href = targetLink;
             } else {
-                alert("領取成功！(無連結)");
+                alert("此分店暫無此獎品連結，請聯繫管理員");
             }
             liff.closeWindow(); 
         }
