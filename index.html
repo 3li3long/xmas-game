@@ -144,9 +144,10 @@
                 id: 'tainan', 
                 name: "台南營業處", 
                 urls: {
-                    prize_wash: "https://line.me/R/ti/p/台南_洗沐", 
-                    prize_set: "https://line.me/R/ti/p/台南_盥洗",
-                    prize_toothbrush: "https://line.me/R/ti/p/台南_牙刷"
+                    // ✅ 台南連結 (V38 更新)
+                    prize_wash: "https://lin.ee/wgGHc80", 
+                    prize_set: "https://lin.ee/fzmH4lr",
+                    prize_toothbrush: "https://lin.ee/QgBZ6gQ"
                 }
             },
             { 
@@ -162,7 +163,7 @@
                 id: 'hualien', 
                 name: "花蓮營業處", 
                 urls: {
-                    // ✅ 花蓮連結
+                    // ✅ 花蓮連結 (V34 已更新)
                     prize_wash: "https://lin.ee/Qab44th", 
                     prize_set: "https://lin.ee/bk3JGtx",
                     prize_toothbrush: "https://lin.ee/EttCa9W"
@@ -312,14 +313,14 @@
             }
         }
 
-        // 🔥🔥🔥 修正：防重複邏輯 (一定要抽到不同的) 🔥🔥🔥
+        // 隨機抽選（確保不重複）
         function getRandomPrize() {
             // 找出已經抽過的 ID
             const wonIds = prizeHistory.map(p => p.id);
             // 濾出還沒抽過的獎品
             let availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
 
-            // 防呆：如果萬一全抽過了，就從全部抽 (避免卡死)
+            // 防呆：如果萬一全抽過了，就從全部抽
             if (availablePrizes.length === 0) availablePrizes = prizes;
 
             let totalWeight = 0;
@@ -436,7 +437,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'branch-btn';
                 btn.textContent = branch.name;
-                // 🔥🔥🔥 修正：這裡加上了完整的 onclick 事件 🔥🔥🔥
+                // 設定點擊事件
                 btn.onclick = () => finalizeClaim(branch);
                 list.appendChild(btn);
             });
@@ -444,7 +445,6 @@
             modal.style.display = 'flex';
         }
 
-        // 🔥🔥🔥 修正：確保跳轉邏輯正確 🔥🔥🔥
         function finalizeClaim(branch) {
             const finalPrize = prizeHistory[selectedPrizeIndex];
             
@@ -465,7 +465,7 @@
             } else {
                 alert("此分店暫無此獎品連結，請聯繫管理員");
             }
-            // liff.closeWindow(); // 暫時註解掉，避免還沒跳轉就關閉
+            // liff.closeWindow(); 
         }
 
         window.onload = function() {
