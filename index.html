@@ -15,10 +15,21 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 100vh; width: 100vw; margin: 0; padding: 10px;
             overflow-x: hidden; overflow-y: auto;
-            user-select: none; /* 防止連點時選取文字 */
-            -webkit-user-select: none;
+            /* 🔥 禁止選取文字，避免連點時反白露餡 */
+            user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;
         }
-        h1 { color: #f8d85c; text-shadow: 2px 2px 4px #000; margin-bottom: 5px; font-size: clamp(1.5rem, 5vw, 2rem); text-align: center; font-weight: 800; cursor: pointer; }
+        
+        /* 🔥 標題樣式修改：cursor: default (滑過去是箭頭，不會變手指) */
+        h1 { 
+            color: #f8d85c; 
+            text-shadow: 2px 2px 4px #000; 
+            margin-bottom: 5px; 
+            font-size: clamp(1.5rem, 5vw, 2rem); 
+            text-align: center; 
+            font-weight: 800; 
+            cursor: default; /* 關鍵修改：偽裝成普通游標 */
+        }
+
         .subtitle { color: #fff; font-size: 1rem; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); background: rgba(255,255,255,0.15); padding: 5px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
         .info-text { font-size: 0.9rem; color: #ddd; margin-bottom: 10px; text-align: center;}
         .round-indicator { background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; margin-bottom: 10px; font-size: 0.9rem; color: #f8d85c; border: 1px solid rgba(248, 216, 92, 0.3); }
@@ -140,7 +151,7 @@
                 id: 'taipei', 
                 name: "台北辦公室", 
                 urls: {
-                    // ✅ 台北
+                    // ✅ 台北連結
                     prize_wash: "https://lin.ee/c3a3jQ5", 
                     prize_set: "https://lin.ee/ILoPfgp",
                     prize_toothbrush: "https://lin.ee/6RxUmoD"
@@ -150,7 +161,7 @@
                 id: 'taoyuan', 
                 name: "桃園營業處", 
                 urls: {
-                    // ✅ 桃園
+                    // ✅ 桃園連結
                     prize_wash: "https://lin.ee/3KnFz3X", 
                     prize_set: "https://lin.ee/eXg8av0", 
                     prize_toothbrush: "https://lin.ee/Q4njThl" 
@@ -160,7 +171,7 @@
                 id: 'central', 
                 name: "中部服務處", 
                 urls: {
-                    // ✅ 中部
+                    // ✅ 中部連結
                     prize_wash: "https://lin.ee/xNDFmlV", 
                     prize_set: "https://lin.ee/cTYxnQW", 
                     prize_toothbrush: "https://lin.ee/okupj0i" 
@@ -170,7 +181,7 @@
                 id: 'tainan', 
                 name: "台南營業處", 
                 urls: {
-                    // ✅ 台南
+                    // ✅ 台南連結
                     prize_wash: "https://lin.ee/wgGHc80", 
                     prize_set: "https://lin.ee/fzmH4lr",
                     prize_toothbrush: "https://lin.ee/QgBZ6gQ"
@@ -180,7 +191,7 @@
                 id: 'southern', 
                 name: "南部服務處", 
                 urls: {
-                    // ✅ 南部
+                    // ✅ 南部連結
                     prize_wash: "https://lin.ee/8D6AjQn", 
                     prize_set: "https://lin.ee/kAb1vB3", 
                     prize_toothbrush: "https://lin.ee/tUCrOHG" 
@@ -190,7 +201,7 @@
                 id: 'yilan', 
                 name: "宜蘭營業處", 
                 urls: {
-                    // ✅ 宜蘭
+                    // ✅ 宜蘭連結
                     prize_wash: "https://lin.ee/9VQ57Kp", 
                     prize_set: "https://lin.ee/SgHG2Jt", 
                     prize_toothbrush: "https://lin.ee/pWytW8N" 
@@ -200,7 +211,7 @@
                 id: 'hualien', 
                 name: "花蓮營業處", 
                 urls: {
-                    // ✅ 花蓮
+                    // ✅ 花蓮連結
                     prize_wash: "https://lin.ee/Qab44th", 
                     prize_set: "https://lin.ee/bk3JGtx",
                     prize_toothbrush: "https://lin.ee/EttCa9W"
@@ -210,7 +221,7 @@
                 id: 'taitung', 
                 name: "台東營業處", 
                 urls: {
-                    // ✅ 台東
+                    // ✅ 台東連結
                     prize_wash: "https://lin.ee/516IygN", 
                     prize_set: "https://lin.ee/PoR8Te6l", 
                     prize_toothbrush: "https://lin.ee/JrklB2Pl" 
