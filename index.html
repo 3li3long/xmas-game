@@ -50,6 +50,9 @@
         .branch-btn:hover { border-color: #d4a00d; background-color: #fffdf0; }
         .branch-btn:after { content: '👉'; position: absolute; right: 15px; }
 
+        /* 警告文字 */
+        .warning-text { color: #d42426; font-weight: bold; font-size: 0.9rem; margin-top: 5px; padding: 5px; border: 1px dashed #d42426; border-radius: 5px; background: #fff0f0; }
+
         .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
         @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
     </style>
@@ -107,7 +110,11 @@
         <div class="modal-content">
             <div class="modal-inner-content">
                 <div class="modal-title">📍 請選擇領取分店</div>
-                <div class="modal-desc">您選擇了 <b id="selectedPrizeName" style="color:#d42426"></b><br>請問您要去哪裡領取？</div>
+                <div class="modal-desc">
+                    您選擇了 <b id="selectedPrizeName" style="color:#d42426"></b><br>
+                    請問您要去哪裡領取？
+                    <div class="warning-text">⚠️ 注意：確認選定後將無法更換！</div>
+                </div>
                 <div id="branchList"></div>
             </div>
         </div>
@@ -126,9 +133,10 @@
                 id: 'taipei', 
                 name: "台北辦公室", 
                 urls: {
-                    prize_wash: "https://line.me/R/ti/p/台北_洗沐", 
-                    prize_set: "https://line.me/R/ti/p/台北_盥洗",
-                    prize_toothbrush: "https://line.me/R/ti/p/台北_牙刷"
+                    // ✅ 台北連結 (V39)
+                    prize_wash: "https://lin.ee/c3a3jQ5", 
+                    prize_set: "https://lin.ee/ILoPfgp",
+                    prize_toothbrush: "https://lin.ee/6RxUmoD"
                 }
             },
             { 
@@ -141,13 +149,32 @@
                 }
             },
             { 
+                id: 'central', 
+                name: "中部服務處", 
+                urls: {
+                    prize_wash: "https://line.me/R/ti/p/中部_洗沐", 
+                    prize_set: "https://line.me/R/ti/p/中部_盥洗",
+                    prize_toothbrush: "https://line.me/R/ti/p/中部_牙刷"
+                }
+            },
+            { 
                 id: 'tainan', 
                 name: "台南營業處", 
                 urls: {
-                    // ✅ 台南連結 (V38 更新)
+                    // ✅ 台南連結 (V38)
                     prize_wash: "https://lin.ee/wgGHc80", 
                     prize_set: "https://lin.ee/fzmH4lr",
                     prize_toothbrush: "https://lin.ee/QgBZ6gQ"
+                }
+            },
+            { 
+                id: 'southern', 
+                name: "南部服務處", 
+                urls: {
+                    // ✅ 南部連結 (V41 更新)
+                    prize_wash: "https://lin.ee/8D6AjQn", 
+                    prize_set: "https://lin.ee/kAb1vB3", 
+                    prize_toothbrush: "https://lin.ee/tUCrOHG" 
                 }
             },
             { 
@@ -163,7 +190,7 @@
                 id: 'hualien', 
                 name: "花蓮營業處", 
                 urls: {
-                    // ✅ 花蓮連結 (V34 已更新)
+                    // ✅ 花蓮連結 (V34)
                     prize_wash: "https://lin.ee/Qab44th", 
                     prize_set: "https://lin.ee/bk3JGtx",
                     prize_toothbrush: "https://lin.ee/EttCa9W"
@@ -315,12 +342,8 @@
 
         // 隨機抽選（確保不重複）
         function getRandomPrize() {
-            // 找出已經抽過的 ID
             const wonIds = prizeHistory.map(p => p.id);
-            // 濾出還沒抽過的獎品
             let availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
-
-            // 防呆：如果萬一全抽過了，就從全部抽
             if (availablePrizes.length === 0) availablePrizes = prizes;
 
             let totalWeight = 0;
@@ -437,18 +460,25 @@
                 const btn = document.createElement('button');
                 btn.className = 'branch-btn';
                 btn.textContent = branch.name;
-                // 設定點擊事件
-                btn.onclick = () => finalizeClaim(branch);
+                // 點擊觸發確認彈窗
+                btn.onclick = () => confirmBranchChoice(branch);
                 list.appendChild(btn);
             });
 
             modal.style.display = 'flex';
         }
 
+        // 確認選擇函數
+        function confirmBranchChoice(branch) {
+            const isConfirmed = confirm(`您選擇的是【${branch.name}】\n\n⚠️ 請注意：選定後將無法更換分店或獎品！\n\n確定要領取嗎？`);
+            if (isConfirmed) {
+                finalizeClaim(branch);
+            }
+        }
+
         function finalizeClaim(branch) {
             const finalPrize = prizeHistory[selectedPrizeIndex];
             
-            // 從分店資料中，找出該獎品對應的連結
             const targetLink = branch.urls[finalPrize.id];
 
             if (userId) {
@@ -465,7 +495,6 @@
             } else {
                 alert("此分店暫無此獎品連結，請聯繫管理員");
             }
-            // liff.closeWindow(); 
         }
 
         window.onload = function() {
