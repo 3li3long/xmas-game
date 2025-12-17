@@ -15,8 +15,10 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 100vh; width: 100vw; margin: 0; padding: 10px;
             overflow-x: hidden; overflow-y: auto;
+            user-select: none; /* 防止連點時選取文字 */
+            -webkit-user-select: none;
         }
-        h1 { color: #f8d85c; text-shadow: 2px 2px 4px #000; margin-bottom: 5px; font-size: clamp(1.5rem, 5vw, 2rem); text-align: center; font-weight: 800; }
+        h1 { color: #f8d85c; text-shadow: 2px 2px 4px #000; margin-bottom: 5px; font-size: clamp(1.5rem, 5vw, 2rem); text-align: center; font-weight: 800; cursor: pointer; }
         .subtitle { color: #fff; font-size: 1rem; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); background: rgba(255,255,255,0.15); padding: 5px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
         .info-text { font-size: 0.9rem; color: #ddd; margin-bottom: 10px; text-align: center;}
         .round-indicator { background: rgba(0,0,0,0.4); padding: 5px 15px; border-radius: 20px; margin-bottom: 10px; font-size: 0.9rem; color: #f8d85c; border: 1px solid rgba(248, 216, 92, 0.3); }
@@ -53,6 +55,10 @@
         /* 警告文字 */
         .warning-text { color: #d42426; font-weight: bold; font-size: 0.9rem; margin-top: 5px; padding: 5px; border: 1px dashed #d42426; border-radius: 5px; background: #fff0f0; }
 
+        /* 開發者區域 (預設隱藏) */
+        #dev-section { display: none; margin-top: 40px; text-align: center; z-index: 999; position: relative; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
         .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
         @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
     </style>
@@ -60,7 +66,8 @@
 <body>
     <div class="snow"></div>
     
-    <h1 id="welcome-msg">🎄 聖誕好禮拉霸 🎄</h1>
+    <h1 id="welcome-msg" onclick="triggerDevMode()">🎄 聖誕好禮拉霸 🎄</h1>
+    
     <div class="subtitle">✨ 消費滿千即可參加 ✨</div>
     
     <div class="info-text" id="status-msg">連線中...</div>
@@ -77,11 +84,11 @@
         </div>
     </div>
 
-    <div style="margin-top: 40px; text-align: center; z-index: 999; position: relative;">
+    <div id="dev-section">
         <button onclick="resetGame()" style="background: #e74c3c; color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            🔄 清除紀錄 (測試用)
+            🛠️ 開發者模式：清除紀錄
         </button>
-        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(清除後可重新體驗流程)</p>
+        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(已啟用：可隨時重置測試)</p>
     </div>
 
     <div class="modal-overlay" id="resultModal">
@@ -133,7 +140,7 @@
                 id: 'taipei', 
                 name: "台北辦公室", 
                 urls: {
-                    // ✅ 台北連結 (V39)
+                    // ✅ 台北
                     prize_wash: "https://lin.ee/c3a3jQ5", 
                     prize_set: "https://lin.ee/ILoPfgp",
                     prize_toothbrush: "https://lin.ee/6RxUmoD"
@@ -143,25 +150,27 @@
                 id: 'taoyuan', 
                 name: "桃園營業處", 
                 urls: {
-                    prize_wash: "https://line.me/R/ti/p/桃園_洗沐", 
-                    prize_set: "https://line.me/R/ti/p/桃園_盥洗",
-                    prize_toothbrush: "https://line.me/R/ti/p/桃園_牙刷"
+                    // ✅ 桃園
+                    prize_wash: "https://lin.ee/3KnFz3X", 
+                    prize_set: "https://lin.ee/eXg8av0", 
+                    prize_toothbrush: "https://lin.ee/Q4njThl" 
                 }
             },
             { 
                 id: 'central', 
                 name: "中部服務處", 
                 urls: {
-                    prize_wash: "https://line.me/R/ti/p/中部_洗沐", 
-                    prize_set: "https://line.me/R/ti/p/中部_盥洗",
-                    prize_toothbrush: "https://line.me/R/ti/p/中部_牙刷"
+                    // ✅ 中部
+                    prize_wash: "https://lin.ee/xNDFmlV", 
+                    prize_set: "https://lin.ee/cTYxnQW", 
+                    prize_toothbrush: "https://lin.ee/okupj0i" 
                 }
             },
             { 
                 id: 'tainan', 
                 name: "台南營業處", 
                 urls: {
-                    // ✅ 台南連結 (V38)
+                    // ✅ 台南
                     prize_wash: "https://lin.ee/wgGHc80", 
                     prize_set: "https://lin.ee/fzmH4lr",
                     prize_toothbrush: "https://lin.ee/QgBZ6gQ"
@@ -171,7 +180,7 @@
                 id: 'southern', 
                 name: "南部服務處", 
                 urls: {
-                    // ✅ 南部連結 (V41 更新)
+                    // ✅ 南部
                     prize_wash: "https://lin.ee/8D6AjQn", 
                     prize_set: "https://lin.ee/kAb1vB3", 
                     prize_toothbrush: "https://lin.ee/tUCrOHG" 
@@ -181,16 +190,17 @@
                 id: 'yilan', 
                 name: "宜蘭營業處", 
                 urls: {
-                    prize_wash: "https://line.me/R/ti/p/宜蘭_洗沐", 
-                    prize_set: "https://line.me/R/ti/p/宜蘭_盥洗",
-                    prize_toothbrush: "https://line.me/R/ti/p/宜蘭_牙刷"
+                    // ✅ 宜蘭
+                    prize_wash: "https://lin.ee/9VQ57Kp", 
+                    prize_set: "https://lin.ee/SgHG2Jt", 
+                    prize_toothbrush: "https://lin.ee/pWytW8N" 
                 }
             },
             { 
                 id: 'hualien', 
                 name: "花蓮營業處", 
                 urls: {
-                    // ✅ 花蓮連結 (V34)
+                    // ✅ 花蓮
                     prize_wash: "https://lin.ee/Qab44th", 
                     prize_set: "https://lin.ee/bk3JGtx",
                     prize_toothbrush: "https://lin.ee/EttCa9W"
@@ -200,9 +210,10 @@
                 id: 'taitung', 
                 name: "台東營業處", 
                 urls: {
-                    prize_wash: "https://line.me/R/ti/p/台東_洗沐", 
-                    prize_set: "https://line.me/R/ti/p/台東_盥洗",
-                    prize_toothbrush: "https://line.me/R/ti/p/台東_牙刷"
+                    // ✅ 台東
+                    prize_wash: "https://lin.ee/516IygN", 
+                    prize_set: "https://lin.ee/PoR8Te6l", 
+                    prize_toothbrush: "https://lin.ee/JrklB2Pl" 
                 }
             }
         ];
@@ -230,6 +241,32 @@
                 desc: '貼心好禮！一次帶走「旅用牙刷牙膏組 * 3組」！'
             }
         ];
+
+        // ==========================================
+        // 🔥 開發者模式隱藏邏輯 🔥
+        // ==========================================
+        let devClickCount = 0;
+        let devClickTimer = null;
+
+        function triggerDevMode() {
+            devClickCount++;
+            
+            // 3秒內沒繼續點就歸零
+            clearTimeout(devClickTimer);
+            devClickTimer = setTimeout(() => {
+                devClickCount = 0;
+            }, 3000);
+
+            // 點擊 10 次觸發
+            if (devClickCount >= 10) {
+                const devSection = document.getElementById('dev-section');
+                if (devSection.style.display === 'none' || devSection.style.display === '') {
+                    devSection.style.display = 'block';
+                    alert("🔧 開發者測試模式已啟用！\n下方會出現「清除紀錄」按鈕。");
+                }
+                devClickCount = 0; // 重置
+            }
+        }
 
         // ==========================================
         // 核心程式碼
