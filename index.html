@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>聖誕拉霸活動</title>
-    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        /* --- 樣式區 --- */
+        /* --- 樣式區 (保留不變) --- */
         * { box-sizing: border-box; }
         body {
             font-family: 'Arial', sans-serif;
@@ -15,11 +14,9 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             min-height: 100vh; width: 100vw; margin: 0; padding: 10px;
             overflow-x: hidden; overflow-y: auto;
-            /* 🔥 禁止選取文字，避免連點時反白露餡 */
-            user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;
+            user-select: none; -webkit-user-select: none;
         }
         
-        /* 🔥 標題樣式修改：cursor: default (滑過去是箭頭，不會變手指) */
         h1 { 
             color: #f8d85c; 
             text-shadow: 2px 2px 4px #000; 
@@ -27,7 +24,7 @@
             font-size: clamp(1.5rem, 5vw, 2rem); 
             text-align: center; 
             font-weight: 800; 
-            cursor: default; /* 關鍵修改：偽裝成普通游標 */
+            cursor: default; 
         }
 
         .subtitle { color: #fff; font-size: 1rem; margin-bottom: 15px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); background: rgba(255,255,255,0.15); padding: 5px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); }
@@ -38,517 +35,49 @@
         .slots-window { background-color: #fff; border-radius: 10px; display: flex; justify-content: space-around; align-items: center; padding: 10px 5px; border: 3px solid #e0e0e0; box-shadow: inset 0 5px 15px rgba(0,0,0,0.3); width: 100%; }
         .reel { font-size: clamp(2.5rem, 10vw, 3.5rem); width: 33%; height: 70px; line-height: 75px; text-align: center; border-right: 2px solid #ddd; color: #333; display: flex; align-items: center; justify-content: center; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
         .reel:last-child { border-right: none; }
-        .spin-btn { background: linear-gradient(to bottom, #fbe484, #d4a00d); border: none; padding: 15px 0; width: 100%; font-size: 1.5rem; color: #5c3a00; font-weight: bold; border-radius: 50px; cursor: pointer; box-shadow: 0 6px 0 #9e7606, 0 2px 10px rgba(248, 216, 92, 0.4); text-shadow: 0 1px 1px rgba(255,255,255,0.5); transition: all 0.1s; }
-        .spin-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 #9e7606; }
-        .spin-btn:disabled { background: #95a5a6; color: #555; cursor: not-allowed; box-shadow: none; transform: translateY(5px); text-shadow: none;}
-        .btn-claimed { background: linear-gradient(to bottom, #2ecc71, #27ae60) !important; box-shadow: 0 6px 0 #1e8449 !important; color: #fff !important; }
         
-        /* 彈窗樣式 */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-        .modal-content { background: linear-gradient(135deg, #fbe484, #d4a00d); width: 100%; max-width: 340px; padding: 5px; border-radius: 22px; text-align: center; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5); animation: popInBouncy 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); max-height: 90vh; overflow-y: auto; }
-        .modal-inner-content { background: #fff; border-radius: 18px; padding: 25px 20px; color: #333; }
-        @keyframes popInBouncy { 0% { transform: scale(0.3); opacity: 0; } 70% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
-        .modal-title { font-size: 1.4rem; color: #c0392b; margin-bottom: 8px; font-weight: 800; }
-        .modal-desc { font-size: 0.95rem; color: #555; margin-bottom: 25px; line-height: 1.6; background: #f9f9f9; padding: 10px; border-radius: 10px;}
-        .action-btn { background: linear-gradient(to bottom, #2ecc71, #27ae60); color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 1.1rem; cursor: pointer; width: 100%; margin-bottom: 10px; box-shadow: 0 4px 0 #1e8449; font-weight: bold;}
-        .prize-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; text-align: left;}
-        .prize-item { background: #fff; border: 2px solid #eee; border-radius: 15px; padding: 12px; display: flex; align-items: center; text-align: left; cursor: pointer; }
-        .prize-item.selected { border-color: #c0392b; background: #ffebee; border-width: 3px;}
-        .prize-icon { font-size: 2.2rem; margin-right: 15px; width: 50px; text-align: center;}
-        .prize-info { flex: 1; }
-        .prize-name { font-weight: 800; color: #333; }
-        
-        /* 分店選擇按鈕 */
-        .branch-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background: #fff; color: #333; border: 2px solid #ddd; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.2s; text-align: left; position: relative; }
-        .branch-btn:hover { border-color: #d4a00d; background-color: #fffdf0; }
-        .branch-btn:after { content: '👉'; position: absolute; right: 15px; }
-
-        /* 警告文字 */
-        .warning-text { color: #d42426; font-weight: bold; font-size: 0.9rem; margin-top: 5px; padding: 5px; border: 1px dashed #d42426; border-radius: 5px; background: #fff0f0; }
-
-        /* 開發者區域 (預設隱藏) */
-        #dev-section { display: none; margin-top: 40px; text-align: center; z-index: 999; position: relative; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
+        /* 雪花特效 */
         .snow { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background-image: url('data:image/svg+xml;utf8,<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="10" height="10"><circle cx="5" cy="5" r="2" fill="white" opacity="0.3"/></svg>'); animation: snow 10s linear infinite; }
         @keyframes snow { from { background-position: 0 0; } to { background-position: 0 500px; } }
+
+        /* 鎖定告示牌樣式 */
+        .locked-notice {
+            margin-top: 5px;
+            padding: 15px;
+            background-color: #333;
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: inset 0 0 10px #000;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
     <div class="snow"></div>
     
-    <h1 id="welcome-msg" onclick="triggerDevMode()">🎄 聖誕好禮拉霸 🎄</h1>
+    <h1>🎄 聖誕好禮拉霸 🎄</h1>
     
     <div class="subtitle">✨ 歡慶聖誕人人有獎 ✨</div>
     
-    <div class="info-text" id="status-msg">連線中...</div>
-    <div class="round-indicator" id="round-text">準備開始 (0/3)</div>
+    <div class="info-text">🎅 聖誕老公公正在準備禮物...</div>
+    <div class="round-indicator">活動準備中</div>
 
     <div class="machine-container">
         <div class="machine-inner">
             <div class="slots-window">
-                <div class="reel" id="reel1">🎅</div>
-                <div class="reel" id="reel2">🎅</div>
-                <div class="reel" id="reel3">🎅</div>
+                <div class="reel">🎄</div>
+                <div class="reel">🎅</div>
+                <div class="reel">⛄</div>
             </div>
-            <button class="spin-btn" id="spinBtn" onclick="playGame()" disabled>載入中...</button>
-        </div>
-    </div>
-
-    <div id="dev-section">
-        <button onclick="resetGame()" style="background: #e74c3c; color: #fff; border: 2px solid #fff; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-            🛠️ 開發者模式：清除紀錄
-        </button>
-        <p style="font-size: 0.8rem; color: #aaa; margin-top: 5px;">(已啟用：可隨時重置測試)</p>
-    </div>
-
-    <div class="modal-overlay" id="resultModal">
-        <div class="modal-content">
-            <div class="modal-inner-content">
-                <div style="font-size:3.5rem; margin-bottom:10px;" id="modalImg">🎁</div>
-                <div class="modal-title" id="modalTitle">標題</div>
-                <div class="modal-desc" id="modalDesc">敘述</div>
-                <button class="action-btn" id="modalBtn" onclick="nextRound()">放入背包，繼續轉</button>
+            
+            <div class="locked-notice">
+                🔒 12/25 00:00 開放
             </div>
         </div>
     </div>
-
-    <div class="modal-overlay" id="selectionModal">
-        <div class="modal-content">
-            <div class="modal-inner-content">
-                <div class="modal-title">🎉 恭喜完成！</div>
-                <div class="modal-desc" style="text-align: center;">您有 3 次中獎紀錄，請 **擇一** 領取：<br>(點選後將無法更改)</div>
-                <div class="prize-list" id="finalList"></div>
-                <button class="action-btn" onclick="showBranchModal()" disabled id="confirmBtn">請先選擇一個獎品</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="branchModal">
-        <div class="modal-content">
-            <div class="modal-inner-content">
-                <div class="modal-title">📍 請選擇領取分店</div>
-                <div class="modal-desc">
-                    您選擇了 <b id="selectedPrizeName" style="color:#d42426"></b><br>
-                    請問您要去哪裡領取？
-                    <div class="warning-text">⚠️ 注意：確認選定後將無法更換！</div>
-                </div>
-                <div id="branchList"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ✅ LIFF ID
-        const YOUR_LIFF_ID = "2008607102-ZKoAeEga"; 
-
-        // ==========================================
-        // 🔥 設定區：連結資料庫 🔥
-        // ==========================================
-        
-        const branches = [
-            { 
-                id: 'taipei', 
-                name: "台北辦公室", 
-                urls: {
-                    // ✅ 台北連結
-                    prize_wash: "https://lin.ee/c3a3jQ5", 
-                    prize_set: "https://lin.ee/ILoPfgp",
-                    prize_toothbrush: "https://lin.ee/6RxUmoD"
-                }
-            },
-            { 
-                id: 'taoyuan', 
-                name: "桃園營業處", 
-                urls: {
-                    // ✅ 桃園連結
-                    prize_wash: "https://lin.ee/3KnFz3X", 
-                    prize_set: "https://lin.ee/eXg8av0", 
-                    prize_toothbrush: "https://lin.ee/Q4njThl" 
-                }
-            },
-            { 
-                id: 'central', 
-                name: "中部服務處", 
-                urls: {
-                    // ✅ 中部連結
-                    prize_wash: "https://lin.ee/xNDFmlV", 
-                    prize_set: "https://lin.ee/cTYxnQW", 
-                    prize_toothbrush: "https://lin.ee/okupj0i" 
-                }
-            },
-            { 
-                id: 'tainan', 
-                name: "台南營業處", 
-                urls: {
-                    // ✅ 台南連結
-                    prize_wash: "https://lin.ee/wgGHc80", 
-                    prize_set: "https://lin.ee/fzmH4lr",
-                    prize_toothbrush: "https://lin.ee/QgBZ6gQ"
-                }
-            },
-            { 
-                id: 'southern', 
-                name: "南部服務處", 
-                urls: {
-                    // ✅ 南部連結
-                    prize_wash: "https://lin.ee/8D6AjQn", 
-                    prize_set: "https://lin.ee/kAb1vB3", 
-                    prize_toothbrush: "https://lin.ee/tUCrOHG" 
-                }
-            },
-            { 
-                id: 'yilan', 
-                name: "宜蘭營業處", 
-                urls: {
-                    // ✅ 宜蘭連結
-                    prize_wash: "https://lin.ee/9VQ57Kp", 
-                    prize_set: "https://lin.ee/SgHG2Jt", 
-                    prize_toothbrush: "https://lin.ee/pWytW8N" 
-                }
-            },
-            { 
-                id: 'hualien', 
-                name: "花蓮營業處", 
-                urls: {
-                    // ✅ 花蓮連結
-                    prize_wash: "https://lin.ee/Qab44th", 
-                    prize_set: "https://lin.ee/bk3JGtx",
-                    prize_toothbrush: "https://lin.ee/EttCa9W"
-                }
-            },
-            { 
-                id: 'taitung', 
-                name: "台東營業處", 
-                urls: {
-                    // ✅ 台東連結
-                    prize_wash: "https://lin.ee/516IygN", 
-                    prize_set: "https://lin.ee/PoR8Te6l", 
-                    prize_toothbrush: "https://lin.ee/JrklB2Pl" 
-                }
-            }
-        ];
-
-        let prizes = [
-            { 
-                id: 'prize_wash', 
-                weight: 10,  
-                symbol: '🧴', 
-                text: '進口星級洗沐四件組', 
-                desc: '質感好禮！REN 或 JMO 洗沐系列依現場庫存擇一贈送！'
-            },
-            { 
-                id: 'prize_set', 
-                weight: 30, 
-                symbol: '👝', 
-                text: '旅用盥洗包*2+拖鞋*2雙', 
-                desc: '實用好禮！含旅用盥洗包*2組 + 環保拖鞋*2雙！'
-            },
-            { 
-                id: 'prize_toothbrush', 
-                weight: 60,
-                symbol: '🧳', 
-                text: '旅用牙刷牙膏組(*3)', 
-                desc: '貼心好禮！一次帶走「旅用牙刷牙膏組 * 3組」！'
-            }
-        ];
-
-        // ==========================================
-        // 🔥 開發者模式隱藏邏輯 🔥
-        // ==========================================
-        let devClickCount = 0;
-        let devClickTimer = null;
-
-        function triggerDevMode() {
-            devClickCount++;
-            
-            // 3秒內沒繼續點就歸零
-            clearTimeout(devClickTimer);
-            devClickTimer = setTimeout(() => {
-                devClickCount = 0;
-            }, 3000);
-
-            // 點擊 10 次觸發
-            if (devClickCount >= 10) {
-                const devSection = document.getElementById('dev-section');
-                if (devSection.style.display === 'none' || devSection.style.display === '') {
-                    devSection.style.display = 'block';
-                    alert("🔧 開發者測試模式已啟用！\n下方會出現「清除紀錄」按鈕。");
-                }
-                devClickCount = 0; // 重置
-            }
-        }
-
-        // ==========================================
-        // 核心程式碼
-        // ==========================================
-
-        const MAX_ROUNDS = 3;
-        let currentRound = 0;
-        let prizeHistory = []; 
-        let userId = "";
-        let userName = "";
-        let selectedPrizeIndex = -1;
-
-        function initLineLiff() {
-            document.getElementById('status-msg').innerText = "正在連接 LINE...";
-            liff.init({ liffId: YOUR_LIFF_ID })
-                .then(() => {
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                    } else {
-                        getProfile();
-                    }
-                })
-                .catch((err) => {
-                    console.error('LIFF Error:', err);
-                    document.getElementById('status-msg').innerHTML = "測試模式 (未連接 LINE)";
-                    enableGame(); 
-                });
-        }
-
-        function getProfile() {
-            liff.getProfile()
-                .then(profile => {
-                    userId = profile.userId;
-                    userName = profile.displayName;
-                    document.getElementById('welcome-msg').innerText = `🎄 ${userName} 的拉霸 🎄`;
-                    document.getElementById('status-msg').innerText = `Hello, ${userName}！`;
-                    
-                    const wonPrizeName = localStorage.getItem('xmas_won_prize_' + userId);
-                    const wonPrizeLink = localStorage.getItem('xmas_won_link_' + userId);
-
-                    if (localStorage.getItem('xmas_claimed_' + userId)) {
-                        lockGameAsFinished(wonPrizeName, wonPrizeLink);
-                        return;
-                    }
-
-                    const savedHistory = localStorage.getItem('xmas_history_' + userId);
-                    if (savedHistory) {
-                        prizeHistory = JSON.parse(savedHistory);
-                        currentRound = prizeHistory.length;
-                    }
-
-                    enableGame();
-                })
-                .catch(err => {
-                    enableGame();
-                });
-        }
-
-        function enableGame() {
-            const btn = document.getElementById('spinBtn');
-            btn.disabled = false;
-            
-            if (currentRound >= MAX_ROUNDS) {
-                btn.innerText = "查看獎品 (3選1)";
-                btn.onclick = showSelectionModal; 
-            } else {
-                btn.innerText = `開始第 ${currentRound + 1} 次`;
-                btn.onclick = playGame; 
-            }
-            updateRoundText();
-        }
-
-        function lockGameAsFinished(prizeName, prizeLink) {
-            const btn = document.getElementById('spinBtn');
-            const roundText = document.getElementById('round-text');
-            const statusMsg = document.getElementById('status-msg');
-
-            roundText.innerText = "活動已完成";
-            statusMsg.innerText = prizeName ? `已獲得：${prizeName}` : "已完成領取";
-
-            if (prizeLink) {
-                btn.innerText = "🎫 查看我的兌換券";
-                btn.className = "spin-btn btn-claimed";
-                btn.disabled = false;
-                btn.onclick = function() {
-                    window.location.href = prizeLink;
-                };
-            } else {
-                btn.innerText = "已完成";
-                btn.disabled = true;
-            }
-        }
-
-        function updateRoundText() {
-            const el = document.getElementById('round-text');
-            if (currentRound >= MAX_ROUNDS) {
-                el.innerText = "挑戰結束，請選擇獎品";
-            } else {
-                el.innerText = `進度：${currentRound + 1} / 3`;
-            }
-        }
-
-        function resetGame() {
-            if(confirm("確定要清除所有紀錄並重來嗎？")) {
-                localStorage.clear(); 
-                alert("紀錄已清除！");
-                window.location.reload(); 
-            }
-        }
-
-        // 隨機抽選（確保不重複）
-        function getRandomPrize() {
-            const wonIds = prizeHistory.map(p => p.id);
-            let availablePrizes = prizes.filter(p => !wonIds.includes(p.id));
-            if (availablePrizes.length === 0) availablePrizes = prizes;
-
-            let totalWeight = 0;
-            availablePrizes.forEach(p => totalWeight += p.weight);
-            let randomNum = Math.random() * totalWeight;
-
-            for (let i = 0; i < availablePrizes.length; i++) {
-                randomNum -= availablePrizes[i].weight;
-                if (randomNum <= 0) return availablePrizes[i];
-            }
-            return availablePrizes[availablePrizes.length - 1];
-        }
-
-        const reel1 = document.getElementById('reel1');
-        const reel2 = document.getElementById('reel2');
-        const reel3 = document.getElementById('reel3');
-        const spinBtn = document.getElementById('spinBtn');
-
-        function playGame() {
-            if (currentRound >= MAX_ROUNDS) return;
-            spinBtn.disabled = true;
-            spinBtn.innerText = "運轉中...";
-            
-            let interval = setInterval(() => {
-                reel1.innerText = ["🎅","🎄","🎁","💰"][Math.floor(Math.random()*4)];
-                reel2.innerText = ["🎅","🎄","🎁","💰"][Math.floor(Math.random()*4)];
-                reel3.innerText = ["🎅","🎄","🎁","💰"][Math.floor(Math.random()*4)];
-            }, 100);
-
-            let result = getRandomPrize();
-            prizeHistory.push(result);
-
-            if (userId) {
-                localStorage.setItem('xmas_history_' + userId, JSON.stringify(prizeHistory));
-            }
-
-            setTimeout(() => {
-                clearInterval(interval);
-                reel1.innerText = result.symbol;
-                reel2.innerText = result.symbol;
-                reel3.innerText = result.symbol;
-                setTimeout(() => { showResultModal(result); }, 500);
-            }, 1000);
-        }
-
-        function showResultModal(prize) {
-            const modal = document.getElementById('resultModal');
-            document.getElementById('modalTitle').innerText = prize.text;
-            document.getElementById('modalDesc').innerHTML = prize.desc; 
-            document.getElementById('modalImg').innerText = prize.symbol;
-            
-            const btn = document.getElementById('modalBtn');
-            if (prizeHistory.length < MAX_ROUNDS) {
-                btn.innerText = `放入背包，轉第 ${prizeHistory.length + 1} 次`;
-                btn.onclick = nextRound;
-            } else {
-                btn.innerText = "查看所有獎品 (3選1)";
-                btn.onclick = showSelectionModal;
-            }
-            modal.style.display = 'flex';
-        }
-
-        function nextRound() {
-            document.getElementById('resultModal').style.display = 'none';
-            currentRound++;
-            updateRoundText();
-            enableGame();
-        }
-
-        function showSelectionModal() {
-            document.getElementById('resultModal').style.display = 'none';
-            const modal = document.getElementById('selectionModal');
-            const list = document.getElementById('finalList');
-            list.innerHTML = "";
-
-            prizeHistory.forEach((prize, index) => {
-                const item = document.createElement('div');
-                item.className = 'prize-item';
-                item.innerHTML = `
-                    <div class="prize-icon">${prize.symbol}</div>
-                    <div class="prize-info">
-                        <div class="prize-name">${prize.text}</div>
-                        <div class="prize-sub">第 ${index + 1} 次轉出</div>
-                    </div>
-                `;
-                item.onclick = () => selectPrize(index, item);
-                list.appendChild(item);
-            });
-            modal.style.display = 'flex';
-        }
-
-        function selectPrize(index, element) {
-            document.querySelectorAll('.prize-item').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedPrizeIndex = index;
-            const btn = document.getElementById('confirmBtn');
-            btn.disabled = false;
-            btn.innerText = "下一步：選擇領取分店";
-            btn.style.background = "#2ecc71";
-        }
-
-        function showBranchModal() {
-            if (selectedPrizeIndex === -1) return;
-            const prizeName = prizeHistory[selectedPrizeIndex].text;
-            
-            document.getElementById('selectionModal').style.display = 'none';
-            
-            document.getElementById('selectedPrizeName').innerText = prizeName;
-            const modal = document.getElementById('branchModal');
-            const list = document.getElementById('branchList');
-            list.innerHTML = '';
-
-            branches.forEach(branch => {
-                const btn = document.createElement('button');
-                btn.className = 'branch-btn';
-                btn.textContent = branch.name;
-                // 點擊觸發確認彈窗
-                btn.onclick = () => confirmBranchChoice(branch);
-                list.appendChild(btn);
-            });
-
-            modal.style.display = 'flex';
-        }
-
-        // 確認選擇函數
-        function confirmBranchChoice(branch) {
-            const isConfirmed = confirm(`您選擇的是【${branch.name}】\n\n⚠️ 請注意：選定後將無法更換分店或獎品！\n\n確定要領取嗎？`);
-            if (isConfirmed) {
-                finalizeClaim(branch);
-            }
-        }
-
-        function finalizeClaim(branch) {
-            const finalPrize = prizeHistory[selectedPrizeIndex];
-            
-            const targetLink = branch.urls[finalPrize.id];
-
-            if (userId) {
-                localStorage.setItem('xmas_claimed_' + userId, 'true');
-                localStorage.setItem('xmas_won_prize_' + userId, finalPrize.text);
-                localStorage.setItem('xmas_branch_' + userId, branch.name);
-                if(targetLink) {
-                    localStorage.setItem('xmas_won_link_' + userId, targetLink);
-                }
-            }
-
-            if (targetLink) {
-                window.location.href = targetLink;
-            } else {
-                alert("此分店暫無此獎品連結，請聯繫管理員");
-            }
-        }
-
-        window.onload = function() {
-            initLineLiff();
-        };
-    </script>
 </body>
 </html>
-
